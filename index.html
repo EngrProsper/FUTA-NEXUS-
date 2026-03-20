@@ -1532,5 +1532,267 @@ function renderResultsScreen(r, bC, bT, elapsed) {
 }
 
 // ── REVIEW ─────────────────────────────────────────────────
+function setRevFilter(f) {
+  vib(15);
+  revFilter = f;
+  document.getElementById('rf-all').className   = 'btn btn-xs' + (f === 'all' ? ' b-blue' : ' b-gray');
+  document.getElementById('rf-wrong').className = 'btn btn-xs' + (f === 'wrong' ? ' b-red' : ' b-gray');
+  renderReview(f);
+}
+
+function renderReview(filter) {
+  const src  = lastResult ? lastResult.questions : [];
+  const list = document.getElementById('review-list');
+  if (!src.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><h3>No results yet</h3><p>Complete a test first.</p></div>';
+    return;
+  }
+  const filtered = filter === 'wrong' ? src.filter(q => q.user !== q.ans) : src;
+  const letters  = ['A','B','C','D','E'];
+  list.innerHTML = filtered.map(q => {
+    const correct = q.user === q.ans;
+    const opts    = (q.opts || []).map((opt, oi) => {
+      let cls = 'rev-opt';
+      if (opt === q.ans)             cls += ' correct-o';
+      else if (opt === q.user && !correct) cls += ' wrong-o';
+      return '<div class="' + cls + '">' +
+        '<span style="width:20px;height:20px;border-radius:5px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0">' + letters[oi] + '</span>' +
+        '<span style="font-size:.83rem">' + opt + (opt === q.ans ? ' ✓' : '') + (opt === q.user && !correct ? ' ← Yours' : '') + '</span></div>';
+    }).join('');
+    return '<div class="rev-q ' + (correct ? 'correct-q' : 'wrong-q') + '">' +
+      '<div class="rev-q-head">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">' +
+      '<span class="badge ' + (correct ? 'b-green' : 'b-red') + '">' + (correct ? '✓ Correct' : '✗ Wrong') + '</span>' +
+      '<span class="badge b-blue" style="font-size:.6rem">' + (q.block || 'General') + '</span></div>' +
+      '<div style="font-weight:500;font-size:.9rem;line-height:1.65;color:var(--text)">' + q.q + '</div></div>' +
+      '<div class="rev-q-opts">' + opts + '</div>' +
+      (q.expl ? '<div class="rev-expl"><strong>Explanation:</strong> ' + q.expl + '</div>' : '') +
+      '</div>';
+  }).join('');
+}
+
+// ── TIMETABLE ──────────────────────────────────────────────
+function renderTimetable() {
+  const grid = document.getElementById('tt-grid');
+  if (!grid) return;
+  grid.innerHTML = TIMETABLE.map(t => {
+    const d         = daysUntil(t.date);
+    const isPast    = d < 0;
+    const isToday   = d === 0;
+    const isSoon    = d > 0 && d <= 3;
+    const badge     = isPast ? '<span class="badge b-gray">Done</span>' :
+                      isToday ? '<span class="badge b-red blink">TODAY</span>' :
+                      d === 1 ? '<span class="badge b-amber">Tomorrow</span>' :
+                                '<span class="badge b-blue">' + d + ' days</span>';
+    const hasCourse = !!COURSES[t.code];
+    return `<div class="tt-card${isToday ? ' today' : isSoon ? ' soon' : ''}${isPast ? ' past' : ''}">
+      <div><div style="font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em">${t.day}</div>
+      <div style="font-weight:700;font-size:.95rem;margin:.1rem 0">${t.course}</div>
+      <div style="font-size:.75rem;color:var(--muted2)">CBT · ${t.time}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">${badge}
+      ${hasCourse && !isPast ? `<button class="btn btn-xs btn-primary" onclick="pickCourse('${t.code}');gotoTab('practice');closeDrawer()">Practice →</button>` : ''}
+      </div></div>`;
+  }).join('');
+}
+
+// ── TUTOR ──────────────────────────────────────────────────
+const chatKB = [
+  {k:['ohm','voltage','current','resistance'],   a:"<strong>Ohm's Law:</strong> V = IR. Voltage = Current × Resistance. Units: V (volts), I (amperes), R (ohms)."},
+  {k:['kinetic','ke ','half mv'],                a:'<strong>Kinetic Energy:</strong> KE = ½mv². Mass m (kg), velocity v (m/s). Unit: Joules.'},
+  {k:['potential','mgh','gravity','height'],     a:'<strong>Gravitational PE:</strong> PE = mgh. Mass × 9.8 m/s² × height. Unit: Joules.'},
+  {k:['newton','f=ma','force','acceleration'],   a:'<strong>Newton 2nd Law:</strong> F = ma. Net force = mass × acceleration. Unit: Newton (N).'},
+  {k:['arithmetic','ap ','common difference'],   a:'<strong>AP:</strong> Tₙ = a+(n−1)d. Sₙ = n/2[2a+(n−1)d]. a = first term, d = common difference.'},
+  {k:['geometric','gp ','common ratio'],         a:'<strong>GP:</strong> Tₙ = arⁿ⁻¹. Sₙ = a(rⁿ−1)/(r−1). Sum to infinity = a/(1−r) when |r|<1.'},
+  {k:['binomial','pascal','expansion'],          a:"<strong>Binomial:</strong> (a+x)ⁿ = Σ C(n,r)aⁿ⁻ʳxʳ. C(n,r) = n!/[r!(n−r)!]. Pascal's triangle gives coefficients."},
+  {k:['set theory','venn','union','intersect'],  a:'<strong>Sets:</strong> A∪B = all in A or B. A∩B = in both. |A∪B| = |A|+|B|−|A∩B|.'},
+  {k:['induction','mathematical'],               a:'<strong>Induction:</strong> 1) Prove n=1. 2) Assume true for n=k. 3) Prove for n=k+1. Conclude for all positive integers.'},
+  {k:['gazetteer','geographical dictionary'],    a:'<strong>Gazetteer:</strong> A geographical dictionary listing places, their locations, populations and features.'},
+  {k:['issn','isbn'],                            a:'<strong>ISSN</strong> = International Standard Serial Number (journals/magazines). <strong>ISBN</strong> = International Standard Book Number (books).'},
+  {k:['opac','catalogue','library'],             a:'<strong>OPAC</strong> = Online Public Access Catalogue. Searched by author, title, subject or call number.'},
+  {k:['young','elasticity','hooke'],             a:"<strong>Hooke's Law:</strong> F = kx (within elastic limit). Young's Modulus E = stress/strain. It is a material property."},
+  {k:['fluid','viscosity','density'],            a:'<strong>Fluids:</strong> Density ρ = m/V. Specific gravity = ρ/ρ_water. Water density is max at 4°C = 1000 kg/m³.'},
+  {k:['dalton','atom','proton','electron'],       a:'<strong>Atom:</strong> Proton(+1, 1amu), Neutron(0, 1amu), Electron(−1, negligible). Atomic number = protons.'},
+];
+
+function sendChat() {
+  const inp = document.getElementById('chat-input');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  addChatMsg(msg, 'user');
+  inp.value = '';
+  setTimeout(() => {
+    const q   = msg.toLowerCase();
+    let ans   = "I am not sure about that one yet. Try asking about: Ohm's Law, kinetic energy, AP/GP sequences, set theory, binomial theorem, or library science topics.";
+    for (const e of chatKB) { if (e.k.some(k => q.includes(k))) { ans = e.a; break; } }
+    addChatMsg(ans, 'bot');
+  }, 400);
+}
+
+function addChatMsg(text, type) {
+  const wrap = document.getElementById('chat-messages');
+  const div  = document.createElement('div');
+  div.className = 'chat-msg chat-' + type;
+  div.innerHTML = text;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+// ── FAQ ────────────────────────────────────────────────────
+function renderFAQ() {
+  const list = document.getElementById('faq-list');
+  if (!list || list.children.length) return;
+  list.innerHTML = FAQS.map((f, i) =>
+    `<div class="faq-item" id="faq-${i}">
+    <div class="faq-q" onclick="toggleFAQ(${i})">
+    <span>${f.q}</span>
+    <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+    </div><div class="faq-a">${f.a}</div></div>`
+  ).join('');
+}
+function toggleFAQ(i) { document.getElementById('faq-' + i).classList.toggle('open'); }
+
+// ── BUG REPORT ─────────────────────────────────────────────
+function submitBug() {
+  const desc = document.getElementById('bug-desc').value.trim();
+  if (!desc) { toast('Please describe the issue', 'e'); return; }
+  const bugs = JSON.parse(localStorage.getItem('fnx_bugs') || '[]');
+  bugs.push({
+    type:   document.getElementById('bug-type').value,
+    course: document.getElementById('bug-course').value,
+    desc,
+    name:   document.getElementById('bug-name').value,
+    date:   new Date().toISOString(),
+  });
+  localStorage.setItem('fnx_bugs', JSON.stringify(bugs));
+  document.getElementById('bug-ok').classList.remove('hidden');
+  document.getElementById('bug-desc').value = '';
+  toast('Report submitted — thank you!', 's');
+}
+
+// ── LOGIN ──────────────────────────────────────────────────
+function doLogin() {
+  const name = document.getElementById('login-name').value.trim();
+  if (!name) { toast('Please enter your name', 'e'); return; }
+  userProfile = {
+    name,
+    matric: document.getElementById('login-matric').value.trim(),
+    dept:   document.getElementById('login-dept').value.trim(),
+  };
+  localStorage.setItem('fnx_user', JSON.stringify(userProfile));
+  closeModal('modal-login');
+  updateUserUI();
+  toast('Welcome, ' + name.split(' ')[0] + '!', 's');
+  vib([30, 20, 30]);
+}
+
+function doSignout() {
+  if (confirm('Sign out and clear profile?')) {
+    userProfile = null;
+    localStorage.removeItem('fnx_user');
+    updateUserUI();
+    renderProfileTab();
+    toast('Signed out', 'w');
+  }
+}
+
+function updateUserUI() { renderProfileTab(); renderHomeTab(); }
+
+// ── THEME ──────────────────────────────────────────────────
+function setTheme(t) {
+  vib(20);
+  document.body.classList.toggle('light', t === 'light');
+  localStorage.setItem('fnx_theme', t);
+  renderProfileTab();
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', t === 'light' ? '#ffffff' : '#0d1117');
+}
+
+// ── SHARE ──────────────────────────────────────────────────
+function shareApp() {
+  const text = 'FUTA NEXUS — CBT Practice Hub\nFree CBT practice for 100L FUTA students!\nBuilt by Prosper · Building solutions for the future.';
+  if (navigator.share) { navigator.share({title:'FUTA NEXUS', text, url:location.href}).catch(() => {}); }
+  else if (navigator.clipboard) { navigator.clipboard.writeText(text).then(() => toast('Share text copied! 📋', 's')); }
+}
+
+// ── RATING ─────────────────────────────────────────────────
+function setRating(v) {
+  selectedRatingVal = v;
+  const labels = ['','Needs work','Fair','Good!','Very helpful!','Brilliant! 🔥'];
+  document.querySelectorAll('#star-row span').forEach(s => {
+    const sv = parseInt(s.dataset.v);
+    s.textContent = sv <= v ? '⭐' : '☆';
+  });
+  document.getElementById('rating-label').textContent = labels[v] || '';
+}
+
+function submitRating() {
+  if (!selectedRatingVal) { toast('Please tap a star first', 'w'); return; }
+  localStorage.setItem('fnx_rating', selectedRatingVal);
+  closeModal('modal-rating');
+  toast('Thanks for the ' + selectedRatingVal + '-star rating!', 's');
+  vib([20, 15, 30]);
+}
+
+// ── DATA ───────────────────────────────────────────────────
+function clearData() {
+  if (confirm('This will erase all test history, mastery data and your profile. Are you sure?')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+// ── MODALS ─────────────────────────────────────────────────
+function openModal(id)  { const el = document.getElementById(id); if (el) el.classList.remove('hidden'); vib(15); }
+function closeModal(id) { const el = document.getElementById(id); if (el) el.classList.add('hidden'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.add('hidden'); });
+});
+
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg, type) {
+  type = type || 's';
+  const wrap = document.getElementById('toast-wrap');
+  const t    = document.createElement('div');
+  t.className  = 'toast ' + type;
+  t.textContent = msg;
+  wrap.appendChild(t);
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 280); }, 2400);
+}
+
+// ── KEYBOARD ───────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (!overlayStack.includes('exam')) return;
+  if (e.key === 'ArrowLeft')  prevQ();
+  if (e.key === 'ArrowRight') nextQ();
+  if (e.key === 'f' || e.key === 'F') toggleFlag();
+  if (['1','2','3','4','5'].includes(e.key)) chooseOpt(parseInt(e.key) - 1);
+});
+
+// ── STARTUP (SAFE) ─────────────────────────────────────────
+if (localStorage.getItem('fnx_theme') === 'light') document.body.classList.add('light');
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Fallback: hide splash after max 3s (even if init crashes)
+  const splashTimeout = setTimeout(() => hideSplash(), 3000);
+  init()
+    .catch(err => {
+      console.error('Init error:', err);
+      toast('App started in offline mode', 'w');
+    })
+    .finally(() => {
+      clearTimeout(splashTimeout);
+      hideSplash();
+    });
+});
+
+// ── CHAT ENTER KEY ──────────────────────────────────────
+document.getElementById('chat-input')?.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') sendChat();
+});
+</script>
+</body>
+</html>
+```
+
 
 
