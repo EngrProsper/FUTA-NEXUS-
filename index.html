@@ -268,3 +268,281 @@ select.form-input option{background:var(--surface2)}
 .rev-expl strong{color:var(--text)}
 
 /* PROGRESS */
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:.28rem;height:80px;padding:.5rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin:.1rem 1rem .25rem}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:.22rem}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:height .4s ease}
+.chart-bar-lbl{font-size:.55rem;color:var(--muted)}
+
+/* PROFILE */
+.profile-avatar{width:60px;height:60px;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.4rem;color:#fff;margin:0 auto .7rem}
+.theme-option{flex:1;padding:.5rem;border-radius:8px;font-size:.8rem;font-weight:600;border:1.5px solid var(--border);cursor:pointer;text-align:center;transition:all .15s;background:none;color:var(--muted2)}
+.theme-option.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+
+/* TIMETABLE */
+.tt-card{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.85rem .95rem;margin-bottom:.45rem;flex-wrap:wrap;gap:.45rem}
+.tt-card.today{border-color:rgba(218,54,51,.4);background:var(--red-dim)}
+.tt-card.soon{border-color:rgba(210,153,34,.3)}.tt-card.past{opacity:.5}
+
+/* SECTION LABELS */
+.sh{padding:.85rem 1rem .35rem}
+.sh h2{font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.sh p{font-size:.78rem;color:var(--muted2);margin-top:.12rem}
+.section-label{padding:.55rem 1rem .2rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.divider{height:1px;background:var(--border);margin:.2rem 0}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:2.5rem 1.5rem;color:var(--muted2)}
+.empty-icon{font-size:2.2rem;margin-bottom:.65rem;opacity:.55}
+.empty h3{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.empty p{font-size:.8rem;line-height:1.55}
+
+/* UPCOMING EXAMS */
+.exam-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.85rem;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.exam-card.urgent{border-color:rgba(218,54,51,.3);background:var(--red-dim)}
+.exam-card.soon-c{border-color:rgba(210,153,34,.3)}
+
+/* STREAK */
+.streak-card{background:linear-gradient(135deg,rgba(210,153,34,.08),rgba(137,87,229,.06));border:1px solid rgba(210,153,34,.2);border-radius:var(--rb);padding:.95rem;display:flex;align-items:center;gap:.8rem;margin:.6rem 1rem}
+
+/* CHAT */
+.chat-wrap{display:flex;flex-direction:column;gap:.6rem;padding:1rem;overflow-y:auto;max-height:calc(100vh - 220px)}
+.chat-msg{padding:.65rem .85rem;border-radius:12px;font-size:.85rem;line-height:1.6;max-width:88%}
+.chat-bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start}
+.chat-user{background:var(--accent-dim);border:1px solid rgba(47,129,247,.25);align-self:flex-end;text-align:right}
+.chat-inp{display:flex;gap:.45rem;padding:.7rem 1rem;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--bg)}
+.chat-inp input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:.58rem .82rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.86rem;outline:none}
+.chat-inp input:focus{border-color:var(--accent)}
+
+/* FAQ */
+.faq-item{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:.45rem}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:.85rem .95rem;cursor:pointer;font-weight:600;font-size:.87rem;gap:.5rem;transition:background .15s}
+.faq-q:active{background:var(--surface2)}
+.faq-a{padding:0 .95rem;font-size:.82rem;color:var(--muted2);line-height:1.65;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+.faq-item.open .faq-a{max-height:300px;padding:.6rem .95rem .85rem}
+.faq-chevron{transition:transform .3s;flex-shrink:0;color:var(--muted)}
+.faq-item.open .faq-chevron{transform:rotate(180deg)}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:calc(var(--tab-h) + var(--safe-b) + .7rem);left:50%;transform:translateX(-50%);z-index:600;display:flex;flex-direction:column;align-items:center;gap:.35rem;pointer-events:none;width:calc(100% - 2rem);max-width:340px}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:.55rem .95rem;font-size:.8rem;font-weight:500;transform:translateY(16px);opacity:0;transition:all .25s;text-align:center;width:100%}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.s{border-color:rgba(35,134,54,.4);color:var(--green)}
+.toast.w{border-color:rgba(210,153,34,.4);color:var(--amber)}
+.toast.e{border-color:rgba(218,54,51,.4);color:var(--red)}
+
+/* STARS */
+.stars span{font-size:1.5rem;cursor:pointer;transition:transform .1s;display:inline-block}
+.stars span:active{transform:scale(1.15)}
+</style>
+</head>
+<body>
+
+<!-- ════ SPLASH ════ -->
+<div id="splash" style="position:fixed;inset:0;background:#0d1117;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:1.2rem">
+  <div id="splash-logo" style="width:96px;height:96px;border-radius:26px;background:linear-gradient(145deg,#1a237e,#1565c0);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(0,188,212,.25),0 8px 32px rgba(0,0,0,.5)">
+    <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left hemisphere outer -->
+  <path d="M48,18 C48,18 38,16 30,22 C22,28 20,38 24,46 C26,50 30,52 30,52 C30,52 22,56 22,64 C22,72 28,80 36,82 C42,84 48,80 48,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <!-- Right hemisphere outer -->
+  <path d="M52,18 C52,18 62,16 70,22 C78,28 80,38 76,46 C74,50 70,52 70,52 C70,52 78,56 78,64 C78,72 72,80 64,82 C58,84 52,80 52,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <!-- Top bumps left -->
+  <path d="M32,30 C32,26 36,22 40,24 C44,26 44,32 40,34" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Top bumps right -->
+  <path d="M68,30 C68,26 64,22 60,24 C56,26 56,32 60,34" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Bottom bumps left -->
+  <path d="M32,70 C32,74 36,78 40,76 C44,74 44,68 40,66" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Bottom bumps right -->
+  <path d="M68,70 C68,74 64,78 60,76 C56,74 56,68 60,66" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Center divider -->
+  <line x1="50" y1="14" x2="50" y2="86" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <!-- Left horizontal connector -->
+  <line x1="30" y1="50" x2="44" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Right horizontal connector -->
+  <line x1="56" y1="50" x2="70" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Top vertical connector left -->
+  <line x1="38" y1="26" x2="38" y2="36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Top vertical connector right -->
+  <line x1="62" y1="26" x2="62" y2="36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Glow dots - cyan -->
+  <circle cx="30" cy="50" r="4.5" fill="#00E5FF"/>
+  <circle cx="70" cy="50" r="4.5" fill="#00E5FF"/>
+  <circle cx="38" cy="26" r="3.8" fill="#00E5FF"/>
+  <circle cx="62" cy="26" r="3.8" fill="#00E5FF"/>
+  <circle cx="38" cy="74" r="3.8" fill="#00BCD4"/>
+  <circle cx="62" cy="74" r="3.8" fill="#00BCD4"/>
+</svg>
+  </div>
+  <div id="splash-name" style="text-align:center">
+    <div style="font-family:'Inter',sans-serif;font-weight:900;font-size:1.7rem;letter-spacing:.1em;line-height:1">
+      <span style="color:#ffffff">FUTA</span><span style="color:#00BCD4"> NEXUS</span>
+    </div>
+    <div style="font-size:.65rem;color:rgba(255,255,255,.3);letter-spacing:.2em;text-transform:uppercase;margin-top:.35rem;font-weight:500">CBT Practice Hub</div>
+  </div>
+</div>
+
+<!-- ════ TOPBAR ════ -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn hidden" id="back-btn" onclick="goBack()" aria-label="Back">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+    <button class="icon-btn" id="menu-btn" aria-label="Menu">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <div class="brand-logo"><svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M48,18 C48,18 38,16 30,22 C22,28 20,38 24,46 C26,50 30,52 30,52 C30,52 22,56 22,64 C22,72 28,80 36,82 C42,84 48,80 48,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M52,18 C52,18 62,16 70,22 C78,28 80,38 76,46 C74,50 70,52 70,52 C70,52 78,56 78,64 C78,72 72,80 64,82 C58,84 52,80 52,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M32,30 C32,26 36,22 40,24 C44,26 44,32 40,34" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M68,30 C68,26 64,22 60,24 C56,26 56,32 60,34" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M32,70 C32,74 36,78 40,76 C44,74 44,68 40,66" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M68,70 C68,74 64,78 60,76 C56,74 56,68 60,66" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <line x1="50" y1="14" x2="50" y2="86" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <line x1="30" y1="50" x2="44" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="56" y1="50" x2="70" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="38" y1="26" x2="38" y2="36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="62" y1="26" x2="62" y2="36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="30" cy="50" r="4.5" fill="#00E5FF"/>
+  <circle cx="70" cy="50" r="4.5" fill="#00E5FF"/>
+  <circle cx="38" cy="26" r="3.8" fill="#00E5FF"/>
+  <circle cx="62" cy="26" r="3.8" fill="#00E5FF"/>
+  <circle cx="38" cy="74" r="3.8" fill="#00BCD4"/>
+  <circle cx="62" cy="74" r="3.8" fill="#00BCD4"/>
+</svg></div>
+      <div class="brand-name"><span style="color:var(--text)">FUTA</span><span class="brand-nexus"> NEXUS</span></div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="streak-pill hidden" id="streak-pill"><span>🔥</span><span id="streak-num">0</span></div>
+    <div class="exam-timer hidden" id="exam-timer">00:00</div>
+    <button class="btn btn-sm btn-danger hidden" id="submit-btn" onclick="confirmSubmit()">Submit</button>
+  </div>
+</div>
+
+<!-- ════ DRAWER OVERLAY ════ -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- ════ DRAWER ════ -->
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div style="display:flex;align-items:center;gap:.55rem">
+      <div class="brand-logo" style="width:30px;height:30px;border-radius:8px"><svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M48,18 C48,18 38,16 30,22 C22,28 20,38 24,46 C26,50 30,52 30,52 C30,52 22,56 22,64 C22,72 28,80 36,82 C42,84 48,80 48,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M52,18 C52,18 62,16 70,22 C78,28 80,38 76,46 C74,50 70,52 70,52 C70,52 78,56 78,64 C78,72 72,80 64,82 C58,84 52,80 52,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M32,30 C32,26 36,22 40,24 C44,26 44,32 40,34" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M68,30 C68,26 64,22 60,24 C56,26 56,32 60,34" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M32,70 C32,74 36,78 40,76 C44,74 44,68 40,66" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M68,70 C68,74 64,78 60,76 C56,74 56,68 60,66" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <line x1="50" y1="14" x2="50" y2="86" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <line x1="30" y1="50" x2="44" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="56" y1="50" x2="70" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="38" y1="26" x2="38" y2="36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="62" y1="26" x2="62" y2="36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="30" cy="50" r="4.5" fill="#00E5FF"/>
+  <circle cx="70" cy="50" r="4.5" fill="#00E5FF"/>
+  <circle cx="38" cy="26" r="3.8" fill="#00E5FF"/>
+  <circle cx="62" cy="26" r="3.8" fill="#00E5FF"/>
+  <circle cx="38" cy="74" r="3.8" fill="#00BCD4"/>
+  <circle cx="62" cy="74" r="3.8" fill="#00BCD4"/>
+</svg></div>
+      <div>
+        <div style="font-weight:900;font-size:.88rem;letter-spacing:.06em"><span>FUTA</span><span style="color:#00BCD4"> NEXUS</span></div>
+        <div style="font-size:.62rem;color:var(--muted)">100L · 2025/2026</div>
+      </div>
+    </div>
+    <button class="icon-btn" onclick="closeDrawer()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-section">Study Tools</div>
+  <button class="drawer-item" onclick="showOverlay('timetable');closeDrawer()">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Exam Timetable
+  </button>
+  <button class="drawer-item" onclick="showOverlay('chat');closeDrawer()">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Ask Tutor
+  </button>
+  <div class="divider"></div>
+  <div class="drawer-section">App</div>
+  <button class="drawer-item" onclick="showOverlay('faq');closeDrawer()">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    FAQ
+  </button>
+  <button class="drawer-item" onclick="showOverlay('bugs');closeDrawer()">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 2v4a4 4 0 0 0 8 0V2"/><path d="M4 10h16v6a8 8 0 0 1-16 0v-6z"/></svg>
+    Report a Bug
+  </button>
+  <button class="drawer-item" onclick="shareApp();closeDrawer()">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    Share App
+  </button>
+  <div class="drawer-footer">
+    <div style="font-weight:700;font-size:.77rem"><span style="color:var(--text)">Built by </span><span style="color:var(--accent)">Prosper</span></div>
+    <div style="font-size:.68rem;color:var(--muted);font-style:italic;margin-top:.12rem">Building solutions for the future</div>
+    <div style="font-size:.62rem;color:var(--muted);margin-top:.3rem">FUTA NEXUS v2.0</div>
+  </div>
+</div>
+
+<!-- ════ MAIN ════ -->
+<div class="main" id="main">
+
+<!-- HOME -->
+<div class="screen active" id="tab-home">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="greeting" id="hero-greeting">Good morning 👋</div>
+      <h1 class="hero-title">Ready to make your<br><em>5.0 CGPA?</em></h1>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="gotoTab('practice')" style="font-size:.83rem;padding:.52rem 1rem">⚡ Start Practice</button>
+        <button class="btn btn-ghost" onclick="gotoTab('courses')" style="font-size:.83rem;padding:.52rem 1rem">📚 Courses</button>
+      </div>
+    </div>
+    <svg class="hero-illo" viewBox="0 0 100 120" fill="none">
+      <ellipse cx="50" cy="27" rx="25" ry="5.5" fill="#2f81f7" opacity=".9"/>
+      <polygon points="50,15 25,27 50,35 75,27" fill="#2f81f7"/>
+      <rect x="72" y="26" width="2.2" height="15" rx="1.1" fill="#8957e5"/>
+      <circle cx="74.1" cy="43" r="3.2" fill="#8957e5"/>
+      <circle cx="50" cy="54" r="12" fill="#f9d9b5"/>
+      <rect x="33" y="67" width="34" height="30" rx="9" fill="#2f81f7" opacity=".88"/>
+      <rect x="55" y="73" width="16" height="20" rx="3" fill="white" opacity=".2"/>
+      <path d="M33 79 Q21 81 19 91" stroke="#f9d9b5" stroke-width="7" stroke-linecap="round"/>
+      <path d="M67 79 Q79 81 81 91" stroke="#f9d9b5" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-val" id="home-tests">0</div><div class="stat-lbl">Tests</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--green)" id="home-best">—</div><div class="stat-lbl">Best</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--accent)" id="home-avg">—</div><div class="stat-lbl">Average</div></div>
+  </div>
+  <div class="streak-card" id="streak-card">
+    <div style="font-size:1.8rem">🔥</div>
+    <div>
+      <div style="font-weight:700;font-size:.9rem"><span id="streak-days">0</span>-day study streak</div>
+      <div style="font-size:.74rem;color:var(--muted2)">Practise daily to build your streak</div>
+    </div>
+  </div>
+  <div class="section-label">Upcoming Exams</div>
+  <div style="padding:.2rem 1rem 0" id="upcoming-exams"></div>
+  <div class="section-label" style="margin-top:.5rem">Daily Tip</div>
+  <div style="margin:.1rem 1rem .7rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.9rem">
+    <div style="font-size:.68rem;font-weight:700;color:var(--amber);margin-bottom:.28rem">💡 TIP</div>
+    <div style="font-size:.83rem;line-height:1.6;color:var(--muted2)" id="study-tip"></div>
+  </div>
+  <div class="section-label">Question Library</div>
+  <div id="bank-stats" style="padding:.1rem 1rem 1rem;display:flex;flex-direction:column;gap:.35rem"></div>
+</div>
+
+<!-- COURSES -->
+<div class="screen" id="tab-courses">
+  <div class="sh"><h2>All Courses</h2><p>Tap a course to practice</p></div>
+  <div id="skel-courses" style="padding:.4rem 1rem;display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+    <div class="skel" style="height:108px"></div><div class="skel" style="height:108px"></div>
+    <div class="skel" style="height:108px"></div><div class="skel" style="height:108px"></div>
+  </div>
+  <div style="padding:.4rem 1rem" id="active-courses-grid" class="course-grid hidden"></div>
+  <div class="section-label">Coming Soon</div>
+  <div style="padding:.1rem 1rem 1rem" id="coming-courses-grid" class="course-grid"></div>
+</div>
+
+<!-- PRACTICE -->
