@@ -845,3 +845,274 @@ select.form-input option{background:var(--surface2)}
 // ║  FUTA NEXUS — CBT Practice Hub                          ║
 // ║  Built by Prosper · Building solutions for the future   ║
 // ╚══════════════════════════════════════════════════════════╝
+const GIST_URL = 'https://gist.githubusercontent.com/EngrProsper/12201ebd0ad9443595890a9657d2d7c3/raw/futa_cbt_questions.json';
+
+// ── STATE ──────────────────────────────────────────────────
+let COURSES = {};
+let currentCourse = 'MTS101';
+let currentTab = 'home';
+let overlayStack = [];
+let currentQs = [], userAnswers = [], flagged = {}, currentIdx = 0;
+let timerInterval = null, timerSecs = 0, startTime = 0;
+let currentMode = 0, studyMode = false;
+let isSelectingOpt = false;
+let masteryViewCourse = 'MTS101';
+let selectedRatingVal = 0;
+let revFilter = 'all';
+
+// ── PERSISTED ──────────────────────────────────────────────
+let testHistory  = JSON.parse(localStorage.getItem('fnx_history') || '[]');
+let masteryData  = JSON.parse(localStorage.getItem('fnx_mastery') || '{}');
+let lastResult   = JSON.parse(localStorage.getItem('fnx_last') || 'null');
+let userProfile  = JSON.parse(localStorage.getItem('fnx_user') || 'null');
+let streakData   = JSON.parse(localStorage.getItem('fnx_streak') || '{"count":0,"lastDate":""}');
+
+// ── DATA ───────────────────────────────────────────────────
+const TIMETABLE = [
+  {date:'2026-03-18',day:'Wed 18 Mar',course:'PHY 101',code:'PHY101',time:'8:30 – 11:30 AM'},
+  {date:'2026-03-21',day:'Sat 21 Mar', course:'GNS 101',code:'GNS101',time:'8:30 – 11:30 AM'},
+  {date:'2026-03-23',day:'Mon 23 Mar', course:'CHE 101',code:'CHE101',time:'8:30 – 11:30 AM'},
+  {date:'2026-03-27',day:'Fri 27 Mar', course:'CSC 101',code:'CSC101',time:'8:30 – 11:30 AM'},
+  {date:'2026-03-30',day:'Mon 30 Mar', course:'BIO 101',code:'BIO101',time:'8:30 – 11:30 AM'},
+  {date:'2026-04-07',day:'Tue 7 Apr',  course:'MTS 101',code:'MTS101',time:'8:30 – 11:30 AM'},
+];
+
+const TIPS = [
+  'Review your weakest topic right after a test — not the next day.',
+  'Attempt every question. In CBT, a good guess beats leaving it blank.',
+  'Learn the key formulas first, then practice applying them.',
+  'Two short sessions per day beat one long cramming session.',
+  'After each test, find the single topic where you lost the most marks.',
+  'Use elimination: rule out obviously wrong options first.',
+  'Check units in physics calculations — dimensional analysis saves marks.',
+  'Understand the concept behind each formula, do not just memorise.',
+  'Practice at the same time of day as your actual exam.',
+  'Sleep well the night before. Memory consolidation happens during sleep.',
+  'For set theory: draw Venn diagrams — it makes complex questions visual.',
+  'For GNS103: know your library types — they love testing special vs academic.',
+];
+
+const FAQS = [
+  {q:'How do I start a practice test?', a:'Tap the Practice button (centre of the bottom bar). Select your course and mode to begin.'},
+  {q:'What courses are currently available?', a:'Courses load automatically from the cloud. Active courses show as green cards. The library grows regularly.'},
+  {q:'What is Study Mode?', a:'In Study Mode the correct answer and explanation appear immediately after you select an option. No timer — it is for learning, not testing.'},
+  {q:'Does the app save my progress?', a:'Yes. All test history and topic mastery are saved automatically to your device.'},
+  {q:'How is topic mastery calculated?', a:'After each test your mastery per topic is updated using a blend of historical performance (40%) and your latest result (60%).'},
+  {q:'What is a study streak?', a:'Practise on consecutive days to grow your streak counter. Missing a day resets it to zero. Build the daily habit.'},
+  {q:'Why does the app say offline mode?', a:'When opened as a local file the browser blocks external requests. Deploy to GitHub Pages for full functionality.'},
+];
+
+const COMING_SOON_COURSES = [
+  {code:'CSC101', name:'CSC 101', full:'Intro to Computing',       icon:'💻', color:'rgba(47,129,247,.06)'},
+  {code:'BIO101', name:'BIO 101', full:'General Biology',          icon:'🧬', color:'rgba(35,134,54,.06)'},
+  {code:'BIO103', name:'BIO 103', full:'Biology for Phys Sciences',icon:'🔬', color:'rgba(35,134,54,.04)'},
+  {code:'CSC103', name:'CSC 103', full:'Computer Programming',     icon:'👨‍💻', color:'rgba(47,129,247,.04)'},
+];
+
+const ICON_MAP  = {PHY101:'⚡',PHY103:'🔬',MTS101:'📐',GNS103:'📚',CHE101:'🧪',GET101:'⚙️',GNS101:'📝'};
+const COLOR_MAP = {
+  PHY101:'rgba(47,129,247,.1)', PHY103:'rgba(210,153,34,.1)',
+  MTS101:'rgba(137,87,229,.1)', GNS103:'rgba(35,134,54,.1)',
+  CHE101:'rgba(218,54,51,.08)', GET101:'rgba(56,189,248,.1)', GNS101:'rgba(167,139,250,.1)',
+};
+
+// ── HAPTICS ────────────────────────────────────────────────
+function vib(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch(e) {} }
+
+// ── SPLASH ─────────────────────────────────────────────────
+function hideSplash() {
+  const s = document.getElementById('splash');
+  if (!s || s.style.display === 'none') return;
+  s.style.animation = 'splashFadeOut .45s ease forwards';
+  setTimeout(() => { if (s) s.style.display = 'none'; }, 450);
+}
+
+// ── INIT ───────────────────────────────────────────────────
+async function init() {
+  // Restore theme immediately
+  if (localStorage.getItem('fnx_theme') === 'light') document.body.classList.add('light');
+
+  // Animate splash elements in (using CSS keyframes splashLogoIn / splashNameIn)
+  // Already applied via CSS, but ensure they are visible
+  // No need to set animation again, CSS already has them
+
+  try {
+    const res = await fetch(GIST_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    buildCourses(data.courses);
+  } catch (e) {
+    console.warn('Fetch failed:', e.message);
+    toast('Offline — question bank unavailable', 'w');
+  }
+
+  finishInit();
+}
+
+function buildCourses(coursesData) {
+  COURSES = {};
+  Object.entries(coursesData).forEach(([code, cdata]) => {
+    const qs = cdata.questions || [];
+    COURSES[code] = {
+      name:   cdata.name || code,
+      full:   cdata.full || '',
+      icon:   ICON_MAP[code] || '📋',
+      color:  COLOR_MAP[code] || 'rgba(47,129,247,.1)',
+      bank:   qs,
+      blocks: [...new Set(qs.map(q => q.block).filter(Boolean))],
+    };
+  });
+  Object.keys(COURSES).forEach(c => {
+    if (!masteryData[c]) masteryData[c] = {};
+    COURSES[c].blocks.forEach(b => { if (!masteryData[c][b]) masteryData[c][b] = 0; });
+  });
+}
+
+function finishInit() {
+  updateUserUI();
+  updateStreakUI();
+  const first = Object.keys(COURSES)[0];
+  if (first) pickCourse(first); // only if courses exist
+  renderHomeTab();
+  renderCoursesTab();
+  renderProgressTab();
+  buildCoursePickerModal();
+  renderTimetable();
+  renderFAQ(); // build FAQ list
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────
+function gotoTab(tab) {
+  vib(18);
+  document.querySelectorAll('.screen:not(.overlay)').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn, .tab-practice').forEach(b => b.classList.remove('active'));
+  const target = document.getElementById('tab-' + tab);
+  if (target) target.classList.add('active');
+  const btn = document.getElementById('tab-btn-' + tab);
+  if (btn) btn.classList.add('active');
+  currentTab = tab;
+  overlayStack = [];
+  document.querySelectorAll('.screen.overlay').forEach(s => s.classList.remove('active'));
+  document.getElementById('bottom-nav').classList.remove('hidden');
+  document.getElementById('exam-timer').classList.add('hidden');
+  document.getElementById('submit-btn').classList.add('hidden');
+  updateBackBtn();
+  if (tab === 'home')     renderHomeTab();
+  if (tab === 'courses')  renderCoursesTab();
+  if (tab === 'progress') renderProgressTab();
+  if (tab === 'profile')  renderProfileTab();
+  if (tab === 'practice') updatePracticeTab();
+}
+
+function showOverlay(name) {
+  vib(18);
+  document.querySelectorAll('.screen.overlay').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + name);
+  if (!el) return;
+  el.classList.add('active');
+  overlayStack.push(name);
+  document.getElementById('bottom-nav').classList.add('hidden');
+  updateBackBtn();
+  if (name === 'timetable') renderTimetable();
+  if (name === 'review')    renderReview(revFilter);
+}
+
+function goBack() {
+  vib(22);
+  if (overlayStack.length === 0) return;
+  const removed = overlayStack.pop();
+  const el = document.getElementById('screen-' + removed);
+  if (el) el.classList.remove('active');
+
+  if (overlayStack.length > 0) {
+    const prev = overlayStack[overlayStack.length - 1];
+    document.getElementById('screen-' + prev).classList.add('active');
+  } else {
+    document.getElementById('bottom-nav').classList.remove('hidden');
+    clearInterval(timerInterval);
+    document.getElementById('exam-timer').classList.add('hidden');
+    document.getElementById('submit-btn').classList.add('hidden');
+  }
+  updateBackBtn();
+}
+
+function updateBackBtn() {
+  const btn = document.getElementById('back-btn');
+  if (!btn) return;
+  if (overlayStack.length > 0) btn.classList.remove('hidden');
+  else btn.classList.add('hidden');
+}
+
+// ── DRAWER ─────────────────────────────────────────────────
+document.getElementById('menu-btn').addEventListener('click', () => {
+  vib(15);
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+});
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+// ── HOME ───────────────────────────────────────────────────
+function renderHomeTab() {
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const nameStr = userProfile ? (', ' + userProfile.name.split(' ')[0]) : '';
+  const greetingEl = document.getElementById('hero-greeting');
+  if (greetingEl) greetingEl.textContent = greet + nameStr + ' 👋';
+
+  const tests = testHistory.length;
+  document.getElementById('home-tests').textContent = tests;
+  document.getElementById('home-best').textContent  = tests ? Math.max(...testHistory.map(h => h.pct)) + '%' : '—';
+  document.getElementById('home-avg').textContent   = tests ? Math.round(testHistory.reduce((s, h) => s + h.pct, 0) / tests) + '%' : '—';
+  document.getElementById('study-tip').textContent  = TIPS[Math.floor(Math.random() * TIPS.length)];
+
+  const bs = document.getElementById('bank-stats');
+  if (!Object.keys(COURSES).length) {
+    bs.innerHTML = '<div style="font-size:.8rem;color:var(--muted2)">Loading question library...</div>';
+  } else {
+    bs.innerHTML = Object.entries(COURSES).map(([code, c]) =>
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .85rem;background:var(--surface);border:1px solid var(--border);border-radius:8px">' +
+      '<span style="font-size:.84rem;font-weight:500">' + c.icon + ' ' + c.name + '</span>' +
+      '<span class="badge b-blue">' + c.bank.length + ' Q</span>' +
+      '</div>'
+    ).join('');
+  }
+  renderUpcomingExams();
+}
+
+function renderUpcomingExams() {
+  const container = document.getElementById('upcoming-exams');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const upcoming = TIMETABLE
+    .filter(t => { const d = new Date(t.date); d.setHours(0,0,0,0); return d >= today; })
+    .sort((a,b) => new Date(a.date) - new Date(b.date))
+    .slice(0, 3);
+
+  if (!upcoming.length) { container.innerHTML = '<div style="font-size:.82rem;color:var(--muted2);padding:.25rem 0">No upcoming exams.</div>'; return; }
+
+  container.innerHTML = upcoming.map(t => {
+    const d = daysUntil(t.date);
+    const urgency   = d === 0 ? 'urgent' : d <= 3 ? 'soon-c' : '';
+    const badgeCls  = d === 0 ? 'b-red blink' : d <= 3 ? 'b-amber' : 'b-blue';
+    const label     = d === 0 ? 'TODAY!' : d === 1 ? 'Tomorrow' : d + ' days';
+    const hasCourse = !!COURSES[t.code];
+    return `<div class="exam-card ${urgency}">
+      <div><div style="font-weight:700;font-size:.9rem">${t.course}</div>
+      <div style="font-size:.75rem;color:var(--muted2);margin-top:.1rem">${t.day} · ${t.time}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">
+      <span class="badge ${badgeCls}">${label}</span>
+      ${hasCourse ? `<button class="btn btn-xs btn-primary" onclick="pickCourse('${t.code}');gotoTab('practice')">Practice →</button>` : ''}
+      </div></div>`;
+  }).join('');
+}
+
+function daysUntil(dateStr) {
+  const t = new Date(dateStr); t.setHours(0,0,0,0);
+  const n = new Date(); n.setHours(0,0,0,0);
+  return Math.round((t - n) / 86400000);
+}
+
+// ── COURSES ────────────────────────────────────────────────
+
