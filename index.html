@@ -1115,4 +1115,237 @@ function daysUntil(dateStr) {
 }
 
 // ── COURSES ────────────────────────────────────────────────
+function renderCoursesTab() {
+  const skel   = document.getElementById('skel-courses');
+  const grid   = document.getElementById('active-courses-grid');
+  const coming = document.getElementById('coming-courses-grid');
+
+  if (!Object.keys(COURSES).length) {
+    skel.classList.remove('hidden');
+    grid.classList.add('hidden');
+    return;
+  }
+  skel.classList.add('hidden');
+  grid.classList.remove('hidden');
+
+  const activeCodes = Object.keys(COURSES);
+  grid.innerHTML = activeCodes.map(code => {
+    const c = COURSES[code];
+    return `<div class="course-card active-c" onclick="pickCourse('${code}');gotoTab('practice')">
+      <div class="cc-icon" style="background:${c.color}">${c.icon}</div>
+      <div class="cc-code">${c.name}</div>
+      <div class="cc-name">${c.full}</div>
+      <div class="cc-footer"><span class="badge b-green">Active</span><span style="font-size:.72rem;color:var(--muted2)">${c.bank.length} Q</span></div>
+      </div>`;
+  }).join('');
+
+  coming.innerHTML = COMING_SOON_COURSES
+    .filter(c => !activeCodes.includes(c.code))
+    .map(c =>
+      `<div class="course-card locked-c" style="background:${c.color}">
+      <div class="cc-icon" style="background:rgba(125,133,144,.08)">${c.icon}</div>
+      <div class="cc-code">${c.name}</div>
+      <div class="cc-name">${c.full}</div>
+      <div class="cc-footer"><span class="badge b-amber">Coming Soon</span></div>
+      </div>`
+    ).join('');
+}
+
+// ── PRACTICE ───────────────────────────────────────────────
+function updatePracticeTab() {
+  const c = COURSES[currentCourse];
+  if (!c) { document.getElementById('course-sel-display').textContent = 'No courses loaded'; return; }
+  document.getElementById('course-sel-display').textContent = c.name + ' — ' + c.full;
+  document.getElementById('practice-bank-info').textContent = c.bank.length + ' questions available';
+}
+
+function buildCoursePickerModal() {
+  const list = document.getElementById('course-picker-list');
+  if (!list) return;
+  list.innerHTML = Object.entries(COURSES).map(([code, c]) =>
+    `<button class="btn btn-ghost btn-full" style="justify-content:flex-start;gap:.75rem" onclick="pickCourse('${code}');closeModal('modal-course')">
+      <span style="font-size:1.1rem">${c.icon}</span>
+      <span style="text-align:left"><strong>${c.name}</strong> — ${c.full}<br>
+      <span style="font-size:.72rem;color:var(--muted2)">${c.bank.length} questions</span></span>
+    </button>`
+  ).join('');
+}
+
+function pickCourse(code) {
+  if (COURSES[code]) {
+    currentCourse = code;
+    updatePracticeTab();
+  } else {
+    console.warn('Course not found:', code);
+    const first = Object.keys(COURSES)[0];
+    if (first) currentCourse = first;
+    updatePracticeTab();
+  }
+}
+
+// ── PROGRESS ───────────────────────────────────────────────
+function renderProgressTab() {
+  renderPerfChart();
+  renderMastery();
+  renderHistory();
+}
+
+function renderPerfChart() {
+  const chart  = document.getElementById('perf-chart');
+  const last10 = testHistory.slice(-10);
+  if (!last10.length) {
+    chart.innerHTML = '<div style="width:100%;text-align:center;padding:1.25rem;font-size:.82rem;color:var(--muted2)">Complete tests to see your performance chart</div>';
+    return;
+  }
+  chart.innerHTML = last10.map(t => {
+    const h   = Math.max(4, Math.round((t.pct / 100) * 68));
+    const col = t.pct >= 70 ? 'var(--green)' : t.pct >= 50 ? 'var(--accent)' : 'var(--red)';
+    return `<div class="chart-bar-col"><div class="chart-bar" style="height:${h}px;background:${col}"></div>
+           <div class="chart-bar-lbl">${t.pct}%</div></div>`;
+  }).join('');
+}
+
+function cycleMasteryCourse() {
+  const codes = Object.keys(COURSES);
+  if (!codes.length) return;
+  const idx = codes.indexOf(masteryViewCourse);
+  masteryViewCourse = codes[(idx + 1) % codes.length];
+  const btn = document.getElementById('msel-btn');
+  if (btn && COURSES[masteryViewCourse]) btn.textContent = COURSES[masteryViewCourse].name + ' ▾';
+  renderMastery();
+}
+
+function renderMastery() {
+  const el      = document.getElementById('mastery-blocks');
+  const mastery = masteryData[masteryViewCourse] || {};
+  const entries = Object.entries(mastery).filter(([, v]) => v > 0);
+  if (!entries.length) {
+    el.innerHTML = '<div style="font-size:.82rem;color:var(--muted2);padding:.5rem 0">Take a test in ' + (COURSES[masteryViewCourse] ? COURSES[masteryViewCourse].name : masteryViewCourse) + ' to see mastery here.</div>';
+    return;
+  }
+  el.innerHTML = entries.map(([k, v]) => {
+    const col = v >= 75 ? 'var(--green)' : v >= 50 ? 'var(--accent)' : 'var(--red)';
+    return `<div style="margin-bottom:.75rem">
+      <div style="display:flex;justify-content:space-between;margin-bottom:.28rem">
+      <span style="font-size:.82rem;color:var(--muted2)">${k}</span>
+      <span style="font-size:.82rem;font-weight:700;color:${col}">${v}%</span></div>
+      <div class="pbar"><div class="pbar-fill" style="width:${v}%;background:${col}"></div></div></div>`;
+  }).join('');
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (!testHistory.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><h3>No tests yet</h3><p>Start practising to see your history here.</p></div>';
+    return;
+  }
+  const icons = {'FUTA Survival':'⚡','Mastery Mode':'🧠','Sprint':'🏃','Study Mode':'📖'};
+  list.innerHTML = testHistory.slice().reverse().map(h => {
+    const col = h.pct >= 70 ? 'var(--green)' : h.pct >= 50 ? 'var(--accent)' : 'var(--red)';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem .9rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.4rem">
+      <div style="display:flex;align-items:center;gap:.65rem">
+      <span style="font-size:1.2rem">${icons[h.mode] || '📋'}</span>
+      <div><div style="font-weight:600;font-size:.86rem">${h.mode} · ${h.course}</div>
+      <div style="font-size:.72rem;color:var(--muted2)">${h.date} · ${h.correct}/${h.total}</div></div></div>
+      <div style="font-size:1.2rem;font-weight:800;color:${col}">${h.pct}%</div></div>`;
+  }).join('');
+}
+
+// ── PROFILE ────────────────────────────────────────────────
+function renderProfileTab() {
+  const av = document.getElementById('prof-avatar');
+  const nm = document.getElementById('prof-name');
+  const sb = document.getElementById('prof-sub');
+  const lb = document.getElementById('prof-login-btn');
+  const pd = document.getElementById('prof-details');
+  if (userProfile) {
+    av.textContent = userProfile.name.charAt(0).toUpperCase();
+    nm.textContent = userProfile.name;
+    sb.textContent = userProfile.matric || userProfile.dept || 'FUTA Student';
+    lb.textContent = 'Edit Profile';
+    if (pd) pd.style.display = 'block';
+    document.getElementById('settings-name').textContent   = userProfile.name;
+    document.getElementById('settings-matric').textContent = userProfile.matric || '—';
+    document.getElementById('settings-dept').textContent   = userProfile.dept || '—';
+  } else {
+    av.textContent = '?';
+    nm.textContent = 'Not signed in';
+    sb.textContent = 'Login to save your progress';
+    lb.textContent = 'Sign In';
+    if (pd) pd.style.display = 'none';
+  }
+  const isLight = document.body.classList.contains('light');
+  document.getElementById('theme-dark').classList.toggle('active', !isLight);
+  document.getElementById('theme-light').classList.toggle('active', isLight);
+}
+
+// ── STREAK ─────────────────────────────────────────────────
+function updateStreakUI() {
+  document.getElementById('streak-days').textContent = streakData.count;
+  document.getElementById('streak-num').textContent  = streakData.count;
+  if (streakData.count > 0) document.getElementById('streak-pill').classList.remove('hidden');
+}
+
+function recordPracticeToday() {
+  const today     = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  if (streakData.lastDate === today) return;
+  streakData.count = streakData.lastDate === yesterday ? streakData.count + 1 : 1;
+  streakData.lastDate = today;
+  localStorage.setItem('fnx_streak', JSON.stringify(streakData));
+  updateStreakUI();
+}
+
+// ── START TEST ─────────────────────────────────────────────
+function startTest(mode) {
+  vib(30);
+  const bank = COURSES[currentCourse] && COURSES[currentCourse].bank;
+  if (!bank || !bank.length) { toast('No questions available for this course', 'e'); return; }
+
+  currentMode = mode;
+  studyMode   = (mode === 4);
+  const cfg = {
+    1:{count:Math.min(25,bank.length),mins:12,label:'FUTA Survival'},
+    2:{count:Math.min(40,bank.length),mins:25,label:'Mastery Mode'},
+    3:{count:Math.min(15,bank.length),mins:8, label:'Sprint'},
+    4:{count:bank.length,             mins:0, label:'Study Mode'},
+  }[mode];
+
+  // Balanced pick across blocks
+  const byBlock = {};
+  bank.forEach(q => { (byBlock[q.block] = byBlock[q.block] || []).push(q); });
+  const blocks   = Object.keys(byBlock);
+  const perBlock = Math.max(1, Math.floor(cfg.count / blocks.length));
+  let pool = [];
+  blocks.forEach(b => {
+    const sh = byBlock[b].slice().sort(() => Math.random() - .5);
+    pool.push(...sh.slice(0, perBlock));
+  });
+  const usedIds   = new Set(pool.map(q => q.id));
+  const remaining = bank.filter(q => !usedIds.has(q.id)).sort(() => Math.random() - .5);
+  let ri = 0;
+  while (pool.length < cfg.count && ri < remaining.length) pool.push(remaining[ri++]);
+
+  currentQs   = pool.sort(() => Math.random() - .5).slice(0, cfg.count);
+  userAnswers = new Array(currentQs.length).fill(null);
+  flagged     = {};
+  currentIdx  = 0;
+  startTime   = Date.now();
+
+  recordPracticeToday();
+  showOverlay('exam');
+  document.getElementById('exam-timer').classList.remove('hidden');
+  document.getElementById('submit-btn').classList.remove('hidden');
+  renderExamQ();
+  renderQDotGrid();
+
+  if (!studyMode) {
+    startTimer(cfg.mins * 60);
+  } else {
+    document.getElementById('exam-timer').textContent = '∞';
+  }
+}
+
+// ── TIMER ──────────────────────────────────────────────────
+
 
