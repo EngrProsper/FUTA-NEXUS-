@@ -546,3 +546,302 @@ select.form-input option{background:var(--surface2)}
 </div>
 
 <!-- PRACTICE -->
+<div class="screen" id="tab-practice">
+  <div class="sh"><h2>Start Practice</h2><p>Choose your course and mode</p></div>
+  <div style="margin:.2rem 1rem .7rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.72rem .95rem;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:.67rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Course</div>
+      <div style="font-weight:700;font-size:.92rem;margin-top:.12rem" id="course-sel-display">Loading...</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('modal-course')">Change ▾</button>
+  </div>
+  <div style="font-size:.7rem;color:var(--muted2);padding:0 1rem .35rem" id="practice-bank-info"></div>
+  <div class="mode-grid">
+    <div class="mode-card mc-blue" onclick="startTest(1)">
+      <div class="mode-emoji">⚡</div><div class="mode-label">FUTA Survival</div>
+      <div class="mode-count">25 Q</div><div class="mode-desc">12 min · Real CBT format</div>
+    </div>
+    <div class="mode-card mc-purple" onclick="startTest(2)">
+      <div class="mode-emoji">🧠</div><div class="mode-label">Mastery Mode</div>
+      <div class="mode-count">40 Q</div><div class="mode-desc">25 min · Deep coverage</div>
+    </div>
+    <div class="mode-card mc-green" onclick="startTest(3)">
+      <div class="mode-emoji">🏃</div><div class="mode-label">Sprint</div>
+      <div class="mode-count">15 Q</div><div class="mode-desc">8 min · Quick revision</div>
+    </div>
+    <div class="mode-card mc-dark" onclick="startTest(4)">
+      <div class="mode-emoji">📖</div>
+      <div class="mode-label" style="color:var(--muted2)">Study Mode</div>
+      <div class="mode-count" style="color:var(--text)">All Q</div>
+      <div class="mode-desc" style="color:var(--muted2)">No timer · Learn as you go</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="screen" id="tab-progress">
+  <div class="sh"><h2>Your Progress</h2><p>Performance across all courses</p></div>
+  <div class="section-label">Last 10 Tests</div>
+  <div id="perf-chart" class="chart-bar-wrap"></div>
+  <div class="section-label" style="margin-top:.5rem;display:flex;align-items:center;gap:.5rem;padding-right:1rem">
+    <span style="flex:1">Topic Mastery</span>
+    <button class="btn btn-xs" id="msel-btn" onclick="cycleMasteryCourse()" style="background:var(--accent-dim);color:var(--accent);border:1px solid rgba(47,129,247,.25)">MTS 101 ▾</button>
+  </div>
+  <div id="mastery-blocks" style="padding:.4rem 1rem .5rem"></div>
+  <div class="section-label" style="margin-top:.25rem">Test History</div>
+  <div id="history-list" style="padding:.1rem 1rem 1rem"></div>
+</div>
+
+<!-- PROFILE -->
+<div class="screen" id="tab-profile">
+  <div style="padding:1.2rem 1rem .5rem;text-align:center">
+    <div class="profile-avatar" id="prof-avatar">?</div>
+    <div style="font-weight:700;font-size:1rem" id="prof-name">Not signed in</div>
+    <div style="font-size:.76rem;color:var(--muted2);margin-top:.18rem" id="prof-sub">Login to save your progress</div>
+    <button class="btn btn-primary btn-sm" style="margin-top:.7rem" id="prof-login-btn" onclick="openModal('modal-login')">Sign In</button>
+  </div>
+  <div class="divider" style="margin:.5rem 0"></div>
+  <div class="sh" style="padding-bottom:.2rem"><h2 style="font-size:.85rem">Appearance</h2></div>
+  <div style="padding:.2rem 1rem .8rem;display:flex;gap:.45rem">
+    <button class="theme-option active" id="theme-dark" onclick="setTheme('dark')">🌙 Dark</button>
+    <button class="theme-option" id="theme-light" onclick="setTheme('light')">☀️ Light</button>
+  </div>
+  <div class="divider"></div>
+  <div class="sh" style="padding-bottom:.2rem"><h2 style="font-size:.85rem">Account</h2></div>
+  <div id="prof-details" style="padding:.2rem 1rem .8rem;display:none">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.85rem">
+      <div style="font-size:.8rem;margin-bottom:.3rem"><span style="color:var(--muted);font-weight:600">Name: </span><span id="settings-name">—</span></div>
+      <div style="font-size:.8rem;margin-bottom:.3rem"><span style="color:var(--muted);font-weight:600">Matric: </span><span id="settings-matric">—</span></div>
+      <div style="font-size:.8rem"><span style="color:var(--muted);font-weight:600">Dept: </span><span id="settings-dept">—</span></div>
+    </div>
+    <div style="display:flex;gap:.45rem;margin-top:.6rem">
+      <button class="btn btn-ghost btn-sm" onclick="openModal('modal-login')">Edit Profile</button>
+      <button class="btn btn-sm btn-danger" onclick="doSignout()">Sign Out</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="sh" style="padding-bottom:.2rem"><h2 style="font-size:.85rem">Data</h2></div>
+  <div style="padding:.2rem 1rem 1rem">
+    <div style="font-size:.78rem;color:var(--muted2);margin-bottom:.6rem">All progress is stored locally on your device.</div>
+    <button class="btn btn-ghost btn-sm" onclick="clearData()">🗑 Clear All Data</button>
+  </div>
+  <div class="divider"></div>
+  <div style="padding:.9rem 1rem;text-align:center">
+    <div style="font-size:.78rem;color:var(--muted2);margin-bottom:.22rem">FUTA NEXUS · v2.0</div>
+    <div style="font-size:.72rem;color:var(--muted)">Built by <strong style="color:var(--accent)">Prosper</strong> · Building solutions for the future</div>
+    <div style="margin-top:.7rem;display:flex;gap:.45rem;justify-content:center">
+      <button class="btn btn-ghost btn-sm" onclick="shareApp()">📤 Share</button>
+      <button class="btn btn-ghost btn-sm" onclick="openModal('modal-rating')">⭐ Rate</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM OVERLAY -->
+<div class="screen overlay" id="screen-exam">
+  <div class="ep-bar"><div class="ep-fill" id="ep-fill" style="width:0"></div></div>
+  <div class="q-area">
+    <div class="q-counter-row">
+      <span class="q-counter" id="q-counter">Q 1 OF 25</span>
+      <span class="badge b-blue" id="q-topic">Topic</span>
+    </div>
+    <div class="q-text" id="q-text"></div>
+    <div id="q-options"></div>
+  </div>
+  <div id="study-reveal-wrap" style="display:none">
+    <div class="study-reveal">
+      <div class="sr-verdict" id="sr-verdict"></div>
+      <div id="sr-expl"></div>
+    </div>
+  </div>
+  <div class="q-dot-grid" id="q-dot-grid"></div>
+  <div class="q-nav">
+    <button class="btn btn-ghost btn-sm" onclick="prevQ()">← Prev</button>
+    <button class="btn btn-sm" id="flag-btn" onclick="toggleFlag()" style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(210,153,34,.25)">🚩 Flag</button>
+    <button class="btn btn-primary btn-sm" onclick="nextQ()">Next →</button>
+  </div>
+</div>
+
+<!-- RESULTS OVERLAY -->
+<div class="screen overlay" id="screen-results">
+  <div style="padding:1.4rem 1rem;max-width:460px;margin:0 auto;text-align:center">
+    <div id="score-ring" class="score-ring"></div>
+    <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:.28rem;letter-spacing:-.01em" id="result-headline"></h2>
+    <p style="color:var(--muted2);font-size:.83rem;margin-bottom:1.4rem" id="result-sub"></p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin-bottom:1.1rem">
+      <div class="card card-p" style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:var(--green)" id="r-correct">0</div><div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.06em">Correct</div></div>
+      <div class="card card-p" style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:var(--amber)" id="r-skipped">0</div><div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.06em">Skipped</div></div>
+      <div class="card card-p" style="text-align:center"><div style="font-size:1.35rem;font-weight:800" id="r-time">0m</div><div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.06em">Time</div></div>
+    </div>
+    <div class="card card-p" style="text-align:left;margin-bottom:1.1rem">
+      <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Topic Breakdown</div>
+      <div id="result-breakdown"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.45rem">
+      <button class="btn btn-primary btn-full" onclick="showOverlay('review')">📋 Review All Answers</button>
+      <div style="display:flex;gap:.45rem">
+        <button class="btn btn-ghost btn-full" onclick="gotoTab('practice')">🔄 Retry</button>
+        <button class="btn btn-ghost btn-full" onclick="gotoTab('home')">🏠 Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW OVERLAY -->
+<div class="screen overlay" id="screen-review">
+  <div class="sh"><h2>Answer Review</h2></div>
+  <div style="padding:0 1rem .6rem;display:flex;gap:.45rem">
+    <button class="btn btn-xs b-blue" id="rf-all" onclick="setRevFilter('all')">All</button>
+    <button class="btn btn-xs b-gray" id="rf-wrong" onclick="setRevFilter('wrong')">Wrong Only</button>
+  </div>
+  <div id="review-list" style="padding:0 1rem 1rem"></div>
+</div>
+
+<!-- TIMETABLE OVERLAY -->
+<div class="screen overlay" id="screen-timetable">
+  <div class="sh"><h2>Exam Timetable</h2><p>1st Semester · 2025/2026</p></div>
+  <div id="tt-grid" style="padding:.2rem 1rem 1rem"></div>
+</div>
+
+<!-- TUTOR OVERLAY -->
+<div class="screen overlay" id="screen-chat">
+  <div class="sh"><h2>Ask the Tutor</h2><p>Ask about any 100L topic</p></div>
+  <div class="chat-wrap" id="chat-messages">
+    <div class="chat-msg chat-bot">Hello! I am your FUTA NEXUS tutor for PHY101, MTS101, GNS103 and more. Ask me about formulas, concepts, or how to solve problems.</div>
+  </div>
+  <div class="chat-inp">
+    <input id="chat-input" type="text" placeholder="Ask a question..."/>
+    <button class="btn btn-primary btn-sm" onclick="sendChat()">Send</button>
+  </div>
+</div>
+
+<!-- FAQ OVERLAY -->
+<div class="screen overlay" id="screen-faq">
+  <div class="sh"><h2>FAQ</h2></div>
+  <div id="faq-list" style="padding:.2rem 1rem 1rem;max-width:600px"></div>
+</div>
+
+<!-- BUGS OVERLAY -->
+<div class="screen overlay" id="screen-bugs">
+  <div class="sh"><h2>Report a Bug 🐛</h2><p>Help us improve FUTA NEXUS</p></div>
+  <div style="padding:.2rem 1rem 1rem;max-width:460px">
+    <div class="form-group">
+      <label class="form-label">Issue type</label>
+      <select class="form-input" id="bug-type">
+        <option>Wrong answer in question bank</option>
+        <option>App not working correctly</option>
+        <option>Timer issue</option>
+        <option>Display / layout problem</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Course</label>
+      <select class="form-input" id="bug-course">
+        <option>PHY 101</option><option>MTS 101</option><option>GNS 103</option>
+        <option>PHY 103</option><option>CHE 101</option><option>GET 101</option><option>GNS 101</option><option>General</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Describe the issue</label>
+      <textarea class="form-input" id="bug-desc" rows="4" style="resize:vertical" placeholder="Be as specific as possible..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your name (optional)</label>
+      <input class="form-input" id="bug-name" type="text" placeholder="Anonymous is fine"/>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="submitBug()">Submit Report</button>
+    <div class="hidden" id="bug-ok" style="margin-top:.7rem;padding:.7rem;background:var(--green-dim);border:1px solid rgba(35,134,54,.3);border-radius:var(--r);font-size:.83rem;color:var(--green)">Report submitted — thank you!</div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottom-nav">
+  <button class="tab-btn active" id="tab-btn-home" onclick="gotoTab('home')">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+  </button>
+  <button class="tab-btn" id="tab-btn-courses" onclick="gotoTab('courses')">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses
+  </button>
+  <div class="tab-practice-wrap">
+    <button class="tab-practice" onclick="gotoTab('practice')">
+      <div class="practice-circle">
+        <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"/></svg>
+      </div>
+      <span>Practice</span>
+    </button>
+  </div>
+  <button class="tab-btn" id="tab-btn-progress" onclick="gotoTab('progress')">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Progress
+  </button>
+  <button class="tab-btn" id="tab-btn-profile" onclick="gotoTab('profile')">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
+  </button>
+</div>
+
+<!-- ════ MODALS ════ -->
+<div id="modal-submit" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div style="font-size:1.8rem;margin-bottom:.45rem;text-align:center">⚠️</div>
+    <div class="modal-title" style="text-align:center">Submit Test?</div>
+    <div class="modal-sub" style="text-align:center" id="modal-submit-body">Are you sure?</div>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('modal-submit')">Cancel</button>
+      <button class="btn btn-danger btn-full" onclick="submitExam()">Submit Now</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-login" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+      <div class="modal-title">Sign In</div>
+      <button onclick="closeModal('modal-login')" style="color:var(--muted);font-size:1.1rem;background:none;border:none;cursor:pointer">✕</button>
+    </div>
+    <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="login-name" type="text" placeholder="Your full name"/></div>
+    <div class="form-group"><label class="form-label">Matric Number</label><input class="form-input" id="login-matric" type="text" placeholder="CPE/25/8162"/></div>
+    <div class="form-group"><label class="form-label">Department</label><input class="form-input" id="login-dept" type="text" placeholder="Computer Engineering"/></div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Save and Sign In</button>
+    <p style="font-size:.72rem;color:var(--muted);margin-top:.6rem;text-align:center">Your data stays on this device. No password needed.</p>
+  </div>
+</div>
+
+<div id="modal-course" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+      <div class="modal-title">Select Course</div>
+      <button onclick="closeModal('modal-course')" style="color:var(--muted);font-size:1.1rem;background:none;border:none;cursor:pointer">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.38rem" id="course-picker-list"></div>
+  </div>
+</div>
+
+<div id="modal-rating" class="modal-overlay hidden">
+  <div class="modal-box" style="text-align:center">
+    <div style="font-size:1.8rem;margin-bottom:.4rem">⭐</div>
+    <div class="modal-title">Rate FUTA NEXUS</div>
+    <div class="modal-sub">How helpful has this been?</div>
+    <div class="stars" style="margin-bottom:.9rem" id="star-row">
+      <span onclick="setRating(1)" data-v="1">☆</span>
+      <span onclick="setRating(2)" data-v="2">☆</span>
+      <span onclick="setRating(3)" data-v="3">☆</span>
+      <span onclick="setRating(4)" data-v="4">☆</span>
+      <span onclick="setRating(5)" data-v="5">☆</span>
+    </div>
+    <div style="font-size:.8rem;color:var(--muted2);margin-bottom:.85rem" id="rating-label">Tap to rate</div>
+    <div style="display:flex;gap:.45rem">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('modal-rating')">Later</button>
+      <button class="btn btn-primary btn-full" onclick="submitRating()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════╗
+// ║  FUTA NEXUS — CBT Practice Hub                          ║
+// ║  Built by Prosper · Building solutions for the future   ║
+// ╚══════════════════════════════════════════════════════════╝
