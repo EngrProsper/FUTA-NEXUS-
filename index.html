@@ -1347,5 +1347,190 @@ function startTest(mode) {
 }
 
 // ── TIMER ──────────────────────────────────────────────────
+function startTimer(secs) {
+  clearInterval(timerInterval);
+  timerSecs = secs;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerSecs--;
+    updateTimerDisplay();
+    if (timerSecs <= 0) { clearInterval(timerInterval); submitExam(); }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m  = String(Math.floor(Math.max(0, timerSecs) / 60)).padStart(2, '0');
+  const s  = String(Math.floor(Math.max(0, timerSecs) % 60)).padStart(2, '0');
+  const el = document.getElementById('exam-timer');
+  el.textContent = m + ':' + s;
+  el.className   = 'exam-timer' + (timerSecs <= 120 ? ' danger' : timerSecs <= 300 ? ' warn' : '');
+}
+
+// ── EXAM RENDER ────────────────────────────────────────────
+function renderExamQ() {
+  const q        = currentQs[currentIdx];
+  const answered = userAnswers.filter(a => a !== null).length;
+  const letters  = ['A','B','C','D','E'];
+
+  document.getElementById('q-counter').textContent = 'Q ' + (currentIdx + 1) + ' of ' + currentQs.length;
+  document.getElementById('q-topic').textContent   = q.block || 'General';
+  document.getElementById('q-text').textContent    = q.q;
+  document.getElementById('ep-fill').style.width   = (answered / currentQs.length * 100) + '%';
+
+  const fb = document.getElementById('flag-btn');
+  fb.textContent = flagged[currentIdx] ? '🚩 Flagged' : '🚩 Flag';
+  fb.style.opacity = flagged[currentIdx] ? '1' : '0.7';
+
+  document.getElementById('study-reveal-wrap').style.display = 'none';
+
+  document.getElementById('q-options').innerHTML = q.opts.map((opt, i) => {
+    const sel = userAnswers[currentIdx] === opt;
+    return `<button class="opt${sel ? ' sel' : ''}" onclick="chooseOpt(${i})">
+      <span class="opt-let">${letters[i]}</span>
+      <span>${opt}</span></button>`;
+  }).join('');
+
+  if (studyMode && userAnswers[currentIdx] !== null) showStudyReveal();
+  renderQDotGrid();
+}
+
+function chooseOpt(optIdx) {
+  if (isSelectingOpt) return;
+  isSelectingOpt = true;
+  setTimeout(() => { isSelectingOpt = false; }, 350);
+  vib(15);
+  userAnswers[currentIdx] = currentQs[currentIdx].opts[optIdx];
+  renderExamQ();
+  if (!studyMode) toast('Saved ✓', 's');
+  if (studyMode) showStudyReveal();
+}
+
+function showStudyReveal() {
+  const q       = currentQs[currentIdx];
+  const chosen  = userAnswers[currentIdx];
+  if (!chosen) return;
+  const correct = chosen === q.ans;
+  vib(correct ? [30, 20, 30] : [80]);
+
+  document.getElementById('study-reveal-wrap').style.display = 'block';
+  const verdict = document.getElementById('sr-verdict');
+  verdict.textContent = correct ? '✅ Correct!' : '❌ Wrong — Correct: ' + q.ans;
+  verdict.style.color = correct ? 'var(--green)' : 'var(--red)';
+  document.getElementById('sr-expl').textContent = q.expl || '';
+
+  document.querySelectorAll('.opt').forEach(btn => {
+    const txt = btn.querySelector('span:last-child').textContent;
+    btn.classList.remove('correct', 'wrong', 'missed');
+    if (txt === q.ans)              btn.classList.add('correct');
+    else if (txt === chosen)        btn.classList.add('wrong');
+  });
+}
+
+function prevQ()      { vib(15); if (currentIdx > 0) { currentIdx--; renderExamQ(); } }
+function nextQ()      { vib(15); if (currentIdx < currentQs.length - 1) { currentIdx++; renderExamQ(); } else toast('Last question!', 'w'); }
+function toggleFlag() { vib(20); flagged[currentIdx] = !flagged[currentIdx]; renderExamQ(); }
+function jumpTo(i)    { currentIdx = i; renderExamQ(); }
+
+function renderQDotGrid() {
+  document.getElementById('q-dot-grid').innerHTML = currentQs.map((_, i) => {
+    let cls = 'q-dot';
+    if (i === currentIdx)                       cls += ' cur';
+    else if (flagged[i] && userAnswers[i])      cls += ' ans flg';
+    else if (userAnswers[i] !== null)           cls += ' ans';
+    else if (flagged[i])                        cls += ' flg';
+    return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+  }).join('');
+}
+
+// ── SUBMIT ─────────────────────────────────────────────────
+function confirmSubmit() {
+  vib(25);
+  const ua = userAnswers.filter(a => a === null).length;
+  document.getElementById('modal-submit-body').textContent = ua > 0
+    ? 'You have ' + ua + ' unanswered question' + (ua > 1 ? 's' : '') + '. Submit anyway?'
+    : 'All questions answered. Ready to submit?';
+  openModal('modal-submit');
+}
+
+function submitExam() {
+  closeModal('modal-submit');
+  clearInterval(timerInterval);
+  vib([50, 30, 80]);
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
+  let correct = 0;
+  const bC = {}, bT = {};
+  currentQs.forEach((q, i) => {
+    bT[q.block] = (bT[q.block] || 0) + 1;
+    if (userAnswers[i] === q.ans) { correct++; bC[q.block] = (bC[q.block] || 0) + 1; }
+    else bC[q.block] = bC[q.block] || 0;
+  });
+  const pct     = Math.round((correct / currentQs.length) * 100);
+  const skipped = userAnswers.filter(a => a === null).length;
+
+  if (!masteryData[currentCourse]) masteryData[currentCourse] = {};
+  Object.keys(bT).forEach(b => {
+    const bPct  = Math.round((bC[b] / bT[b]) * 100);
+    const prev  = masteryData[currentCourse][b] || 0;
+    masteryData[currentCourse][b] = Math.round(prev * 0.4 + bPct * 0.6);
+  });
+  localStorage.setItem('fnx_mastery', JSON.stringify(masteryData));
+
+  const modes = {1:'FUTA Survival', 2:'Mastery Mode', 3:'Sprint', 4:'Study Mode'};
+  const record = {
+    id:    Date.now().toString(),
+    mode:  modes[currentMode],
+    course:currentCourse,
+    pct, correct,
+    total:    currentQs.length,
+    skipped,  elapsed,
+    date:     new Date().toLocaleDateString('en-NG', {day:'numeric',month:'short',year:'numeric'}),
+    questions:currentQs.map((q, i) => ({q:q.q,ans:q.ans,user:userAnswers[i],expl:q.expl,block:q.block,opts:q.opts})),
+  };
+  testHistory.push(record);
+  localStorage.setItem('fnx_history', JSON.stringify(testHistory));
+  lastResult = record;
+  localStorage.setItem('fnx_last', JSON.stringify(lastResult));
+
+  renderResultsScreen(record, bC, bT, elapsed);
+  document.getElementById('screen-exam').classList.remove('active');
+  overlayStack = overlayStack.filter(s => s !== 'exam');
+  showOverlay('results');
+  document.getElementById('exam-timer').classList.add('hidden');
+  document.getElementById('submit-btn').classList.add('hidden');
+}
+
+function renderResultsScreen(r, bC, bT, elapsed) {
+  const pct  = r.pct;
+  const circ = 2 * Math.PI * 55;
+  const col  = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--accent)' : 'var(--red)';
+  document.getElementById('score-ring').innerHTML =
+    '<svg viewBox="0 0 130 130" width="130" height="130" style="display:block">' +
+    '<circle cx="65" cy="65" r="55" fill="none" stroke="var(--border)" stroke-width="8"/>' +
+    '<circle id="sa" cx="65" cy="65" r="55" fill="none" stroke="' + col + '" stroke-width="8" stroke-linecap="round"' +
+    ' stroke-dasharray="' + circ + '" stroke-dashoffset="' + circ + '"' +
+    ' style="transition:stroke-dashoffset 1.1s ease;transform:rotate(-90deg);transform-origin:65px 65px"/>' +
+    '<text x="65" y="60" text-anchor="middle" fill="var(--text)" font-size="22" font-weight="900" font-family="Inter">' + pct + '%</text>' +
+    '<text x="65" y="77" text-anchor="middle" fill="var(--muted)" font-size="9" font-weight="700" font-family="Inter" letter-spacing="1">' +
+    (pct >= 70 ? 'PASS' : pct >= 50 ? 'BORDERLINE' : 'FAIL') + '</text></svg>';
+  setTimeout(() => { const sa = document.getElementById('sa'); if (sa) sa.style.strokeDashoffset = circ - (pct / 100) * circ; }, 150);
+
+  document.getElementById('result-headline').textContent = pct >= 70 ? 'Excellent work! 🎉' : pct >= 50 ? 'Good effort, keep pushing 💪' : 'Keep practising — you will nail it! 📚';
+  document.getElementById('result-sub').textContent      = r.correct + ' correct out of ' + r.total + ' questions';
+  document.getElementById('r-correct').textContent       = r.correct + '/' + r.total;
+  document.getElementById('r-skipped').textContent       = r.skipped;
+  const m = Math.floor(elapsed / 60), s = elapsed % 60;
+  document.getElementById('r-time').textContent = m + 'm ' + s + 's';
+  document.getElementById('result-breakdown').innerHTML = Object.keys(bT).map(b => {
+    const bPct = Math.round((bC[b] / bT[b]) * 100);
+    const bc   = bPct >= 70 ? 'var(--green)' : bPct >= 50 ? 'var(--accent)' : 'var(--red)';
+    return '<div style="margin-bottom:.6rem">' +
+      '<div style="display:flex;justify-content:space-between;margin-bottom:.22rem">' +
+      '<span style="font-size:.8rem;color:var(--muted2)">' + b + '</span>' +
+      '<span style="font-size:.8rem;font-weight:700;color:' + bc + '">' + bC[b] + '/' + bT[b] + '</span></div>' +
+      '<div class="pbar"><div class="pbar-fill" style="width:' + bPct + '%;background:' + bc + '"></div></div></div>';
+  }).join('');
+}
+
+// ── REVIEW ─────────────────────────────────────────────────
 
 
