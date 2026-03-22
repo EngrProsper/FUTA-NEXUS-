@@ -2294,3 +2294,271 @@ function shareScoreCard(){
     ctx.beginPath();ctx.moveTo(60,720);ctx.lineTo(740,720);ctx.stroke();
 
     // ── CTA BOX ──
+ctx.fillStyle='rgba(0,188,212,0.1)';
+    roundRect(ctx,60,740,680,180,16);
+    ctx.fill();
+    ctx.strokeStyle='rgba(0,188,212,0.25)';
+    ctx.lineWidth=1.5;
+    roundRect(ctx,60,740,680,180,16);
+    ctx.stroke();
+
+    ctx.fillStyle='#00BCD4';
+    ctx.font='700 16px Inter, Arial';
+    ctx.textAlign='left';
+    ctx.fillText('🎯 Practice with 1,430+ verified FUTA past questions',80,780);
+
+    ctx.fillStyle='rgba(255,255,255,0.7)';
+    ctx.font='500 14px Inter, Arial';
+    ctx.fillText('✓ Timed exam simulation  ✓ Verified answers  ✓ Topic mastery tracking',80,810);
+
+    ctx.fillStyle='#ffffff';
+    ctx.font='800 17px Inter, Arial';
+    ctx.fillText('→ '+APP_URL,80,855);
+
+    ctx.fillStyle='rgba(255,255,255,0.5)';
+    ctx.font='500 13px Inter, Arial';
+    ctx.fillText('Free for all 100-level FUTA students · No download required',80,890);
+
+    // ── DATE ──
+    ctx.textAlign='right';
+    ctx.fillStyle='rgba(255,255,255,0.25)';
+    ctx.font='500 12px Inter, Arial';
+    ctx.fillText(lastResult.date,740,970);
+
+    // Convert canvas to blob and share
+    canvas.toBlob(async(blob)=>{
+      if(!blob){toast('Could not generate image','e');return;}
+      const file=new File([blob],'futa-nexus-score.png',{type:'image/png'});
+      const shareText=`🎯 I just scored ${pct}% on ${courseName} CBT!\n✅ Practice with 1,430+ verified FUTA past questions\n👉 ${APP_URL}\n\nFree for all 100L FUTA students — FUTA NEXUS 🔥`;
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+        try{
+          await navigator.share({files:[file],title:'FUTA NEXUS Score',text:shareText});
+        } catch(e){
+          if(e.name!=='AbortError') shareTextFallback(shareText);
+        }
+      } else {
+        // Fallback: try Web Share without file, else download
+        try{
+          if(navigator.share){
+            await navigator.share({title:'FUTA NEXUS Score',text:shareText,url:APP_URL});
+          } else {
+            downloadCanvas(canvas,blob);
+            toast('Image saved — share from your gallery!','s');
+          }
+        } catch(e){
+          downloadCanvas(canvas,blob);
+          toast('Image downloaded — share from your gallery!','s');
+        }
+      }
+    },'image/png');
+  } catch(err){
+    console.error('Score card error:',err);
+    // Fallback to text share
+    const shareText=`🎯 I just scored ${lastResult.pct}% on ${lastResult.courseName||lastResult.course} CBT!\n✅ ${lastResult.correct}/${lastResult.total} correct · ${Math.floor(lastResult.elapsed/60)}m taken\n\nPractice with 1,430+ verified FUTA past questions 👉 ${APP_URL}`;
+    shareTextFallback(shareText);
+  }
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function downloadCanvas(canvas,blob){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='futa-nexus-score.png';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function shareTextFallback(text){
+  if(navigator.share){
+    navigator.share({title:'FUTA NEXUS Score',text,url:APP_URL}).catch(()=>{
+      if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>toast('Score copied — paste to share!','s'));
+    });
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>toast('Score copied — paste to share!','s'));
+  } else {
+    window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+  }
+}
+
+// ── FLASHCARDS ────────────────────────────────────────────────
+function startFlashcards(){
+  showOverlay('flashcards');
+  initFlashcards();
+}
+
+function initFlashcards(){
+  const c=COURSES[currentCourse];
+  const label=document.getElementById('fc-course-label');
+  if(label)label.textContent=c?(c.name+' — '+c.bank.length+' cards'):'No course selected';
+  if(!c||!c.bank.length)return;
+
+  // Build topic filter buttons
+  const topicBtns=document.getElementById('fc-topic-btns');
+  if(topicBtns){
+    topicBtns.innerHTML=[...new Set(c.bank.map(q=>q.block).filter(Boolean))].map(b=>
+      `<button class="btn btn-xs b-gray" onclick="fcSetFilter('${b.replace(/'/g,"\\'")}')">
+        ${b.length>18?b.slice(0,16)+'…':b}
+      </button>`
+    ).join('');
+  }
+  fcFilter='all';
+  fcBuildCards();
+}
+
+function fcSetFilter(f){
+  fcFilter=f;
+  const allBtn=document.getElementById('fc-all-btn');
+  if(allBtn)allBtn.className='btn btn-xs '+(f==='all'?'b-cyan':'b-gray');
+  fcBuildCards();
+}
+
+function fcBuildCards(){
+  const c=COURSES[currentCourse];
+  if(!c)return;
+  fcCards=fcFilter==='all'?[...c.bank]:c.bank.filter(q=>q.block===fcFilter);
+  fcCards=fcCards.sort(()=>Math.random()-.5);
+  fcIndex=0;
+  renderFCCard();
+}
+
+function renderFCCard(){
+  const nav=document.getElementById('fc-nav');
+  const container=document.getElementById('fc-container');
+  const progress=document.getElementById('fc-progress');
+  const hint=document.getElementById('fc-hint');
+  if(!fcCards.length){
+    container.innerHTML='<div class="empty"><div class="empty-icon">🗂️</div><h3>No cards</h3><p>Try a different topic filter.</p></div>';
+    if(nav)nav.style.display='none';
+    if(hint)hint.style.display='none';
+    return;
+  }
+  if(nav)nav.style.display='flex';
+  if(hint)hint.style.display='flex';
+  if(progress)progress.textContent=(fcIndex+1)+' / '+fcCards.length;
+  const q=fcCards[fcIndex];
+  const letters=['A','B','C','D','E'];
+  const ansIdx=q.opts?q.opts.indexOf(q.ans):-1;
+  const ansLetter=ansIdx>=0?letters[ansIdx]:'';
+  container.innerHTML=`
+    <div class="fc-card" id="fc-card" onclick="fcFlip()">
+      <div class="fc-inner">
+        <div class="fc-front">
+          <div class="fc-label">${q.block||'Question'}</div>
+          <div class="fc-q">${q.q}</div>
+          <div style="margin-top:.8rem;display:flex;flex-wrap:wrap;gap:.3rem">
+            ${(q.opts||[]).map((o,i)=>`<span style="font-size:.75rem;color:var(--muted2);
+              background:var(--surface2);border:1px solid var(--border);
+              border-radius:5px;padding:.18rem .45rem">${letters[i]}. ${o}</span>`).join('')}
+          </div>
+        </div>
+        <div class="fc-back">
+          <div class="fc-label">Answer & Explanation</div>
+          <div class="fc-ans-correct">${ansLetter}${ansLetter?'. ':''}${q.ans}</div>
+          <div class="fc-a">${q.expl||'No explanation available.'}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function fcFlip(){
+  vib(20);
+  const card=document.getElementById('fc-card');
+  if(card)card.classList.toggle('flipped');
+}
+
+function fcNext(){
+  vib(15);
+  if(fcIndex<fcCards.length-1){fcIndex++;renderFCCard();}
+  else{toast('Last card! Great revision 🎉','s');}
+}
+
+function fcPrev(){
+  vib(15);
+  if(fcIndex>0){fcIndex--;renderFCCard();}
+}
+
+// ── TIMETABLE ─────────────────────────────────────────────────
+function renderTimetable(){
+  const grid=document.getElementById('tt-grid');
+  if(!grid)return;
+  grid.innerHTML=TIMETABLE.map(t=>{
+    const d=daysUntil(t.date);
+    const isPast=d<0,isToday=d===0,isSoon=d>0&&d<=3;
+    const badge=isPast?'<span class="badge b-gray">Done</span>':
+      isToday?'<span class="badge b-red blink">TODAY</span>':
+      d===1?'<span class="badge b-amber">Tomorrow</span>':
+      '<span class="badge b-blue">'+d+' days</span>';
+    const hasCourse=!!COURSES[t.code];
+    return `<div class="tt-card${isToday?' today':isSoon?' soon':''}${isPast?' past':''}">
+      <div><div style="font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em">${t.day}</div>
+      <div style="font-weight:700;font-size:.95rem;margin:.1rem 0">${t.course}</div>
+      <div style="font-size:.75rem;color:var(--muted2)">CBT · ${t.time}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">${badge}
+        ${hasCourse&&!isPast?`<button class="btn btn-xs btn-primary" onclick="pickCourse('${t.code}');gotoTab('practice');closeDrawer()">Practice →</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TUTOR CHAT ────────────────────────────────────────────────
+const chatKB=[
+  {k:['ohm','voltage','current','resistance'],   a:"<strong>Ohm's Law:</strong> V = IR. Voltage = Current × Resistance. Units: V, A, Ω."},
+  {k:['kinetic','ke ','half mv'],                a:'<strong>Kinetic Energy:</strong> KE = ½mv². Mass m (kg), velocity v (m/s). Unit: Joules.'},
+  {k:['potential','mgh','gravity','height'],     a:'<strong>Gravitational PE:</strong> PE = mgh. g = 9.8 m/s². Unit: Joules.'},
+  {k:['newton','f=ma','force','acceleration'],   a:'<strong>Newton 2nd Law:</strong> F = ma. Net force = mass × acceleration. Unit: Newton (N).'},
+  {k:['arithmetic','ap ','common difference'],   a:'<strong>AP:</strong> Tₙ = a+(n−1)d. Sₙ = n/2[2a+(n−1)d]. a = first term, d = common difference.'},
+  {k:['geometric','gp ','common ratio'],         a:'<strong>GP:</strong> Tₙ = arⁿ⁻¹. Sₙ = a(rⁿ−1)/(r−1). Sum to infinity = a/(1−r) when |r|<1.'},
+  {k:['binomial','pascal','expansion'],          a:"<strong>Binomial:</strong> (a+x)ⁿ = Σ C(n,r)aⁿ⁻ʳxʳ. C(n,r) = n!/[r!(n−r)!]."},
+  {k:['set theory','venn','union','intersect'],  a:'<strong>Sets:</strong> A∪B = all in A or B. A∩B = in both. |A∪B| = |A|+|B|−|A∩B|.'},
+  {k:['induction','mathematical'],               a:'<strong>Induction:</strong> (1) Prove n=1. (2) Assume n=k. (3) Prove n=k+1.'},
+  {k:['half.life','half life','t1/2'],           a:"<strong>Half-life (1st order):</strong> t½ = 0.693/k = ln2/k. It's constant regardless of concentration."},
+  {k:['equilibrium','le chatelier','kc','kp'],   a:'<strong>Equilibrium:</strong> Kc = [products]/[reactants]. Le Chatelier: system opposes imposed changes.'},
+  {k:['oxidation','reduction','redox'],          a:'<strong>Redox:</strong> Oxidation = loss of electrons (OIL). Reduction = gain of electrons (RIG). OIL RIG.'},
+  {k:['faraday','electrolysis'],                 a:'<strong>Faraday:</strong> Mass = QE/96500 × molar_mass/charge. Q = It (coulombs).'},
+  {k:['gazetteer','geographical dictionary'],    a:'<strong>Gazetteer:</strong> Geographical dictionary listing places, populations, features.'},
+  {k:['opac','catalogue','library'],             a:'<strong>OPAC:</strong> Online Public Access Catalogue. Search by author, title, subject, call number.'},
+  {k:['binary','decimal','hex','octal'],         a:'<strong>Number systems:</strong> Binary (base 2), Octal (base 8), Decimal (base 10), Hex (base 16).'},
+  {k:['logic gate','and gate','or gate','xor'],  a:'<strong>Gates:</strong> AND=all inputs HIGH. OR=any input HIGH. XOR=inputs different. NAND=universal gate.'},
+  {k:['dalton','atom','proton','electron'],      a:'<strong>Atom:</strong> Proton(+1,1amu), Neutron(0,1amu), Electron(−1,negligible). Atomic number=protons.'},
+  {k:['topic sentence','paragraph','skimming'],  a:'<strong>Reading:</strong> Topic sentence = main idea of paragraph. Skimming = quick overview. Scanning = find specific info.'},
+];
+
+function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const msg=inp?inp.value.trim():'';
+  if(!msg)return;
+  addChatMsg(msg,'user');
+  inp.value='';
+  setTimeout(()=>{
+    const q=msg.toLowerCase();
+    let ans="I'm not sure about that yet. Try asking about: Ohm's Law, kinetic energy, equilibrium, half-life, binary numbers, logic gates, AP/GP, set theory, or library science.";
+    for(const e of chatKB){if(e.k.some(k=>q.includes(k))){ans=e.a;break;}}
+    addChatMsg(ans,'bot');
+  },400);
+}
+
+function addChatMsg(text,type){
+  const wrap=document.getElementById('chat-messages');
+  if(!wrap)return;
+  const div=document.createElement('div');
+  div.className='chat-msg chat-'+type;
+  div.innerHTML=text;
+  wrap.appendChild(div);
+  wrap.scrollTop=wrap.scrollHeight;
+}
+
+// ── FAQ ───────────────────────────────────────────────────────
+
