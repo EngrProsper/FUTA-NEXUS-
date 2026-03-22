@@ -2561,4 +2561,151 @@ function addChatMsg(text,type){
 }
 
 // ── FAQ ───────────────────────────────────────────────────────
+function renderFAQ(){
+  const list=document.getElementById('faq-list');
+  if(!list||list.children.length)return;
+  list.innerHTML=FAQS.map((f,i)=>
+    `<div class="faq-item" id="faq-${i}">
+      <div class="faq-q" onclick="toggleFAQ(${i})">
+        <span>${f.q}</span>
+        <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="faq-a">${f.a}</div>
+    </div>`
+  ).join('');
+}
+function toggleFAQ(i){document.getElementById('faq-'+i)?.classList.toggle('open');}
 
+// ── BUG REPORT ────────────────────────────────────────────────
+function submitBug(){
+  const desc=document.getElementById('bug-desc')?.value.trim();
+  if(!desc){toast('Please describe the issue','e');return;}
+  const type=document.getElementById('bug-type')?.value||'Other';
+  const course=document.getElementById('bug-course')?.value||'General';
+  const name=document.getElementById('bug-name')?.value||'Anonymous';
+  const msg='FUTA NEXUS Bug Report\nFrom: '+name+'\nType: '+type+'\nCourse: '+course+'\nDetails: '+desc;
+  window.open('https://wa.me/2347084139752?text='+encodeURIComponent(msg),'_blank');
+  const ok=document.getElementById('bug-ok');
+  if(ok)ok.classList.remove('hidden');
+  const bd=document.getElementById('bug-desc');
+  if(bd)bd.value='';
+  toast('Report sent via WhatsApp!','s');
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function doLogin(){
+  const name=document.getElementById('login-name')?.value.trim();
+  if(!name){toast('Please enter your name','e');return;}
+  userProfile={
+    name,
+    matric:document.getElementById('login-matric')?.value.trim()||'',
+    dept:document.getElementById('login-dept')?.value.trim()||'',
+  };
+  localStorage.setItem('fnx_user',JSON.stringify(userProfile));
+  closeModal('modal-login');
+  updateUserUI();
+  toast('Welcome, '+name.split(' ')[0]+'!','s');
+  vib([30,20,30]);
+}
+
+function doSignout(){
+  if(confirm('Sign out and clear profile?')){
+    userProfile=null;
+    localStorage.removeItem('fnx_user');
+    updateUserUI();
+    renderProfileTab();
+    toast('Signed out','w');
+  }
+}
+
+function updateUserUI(){renderProfileTab();renderHomeTab();}
+
+// ── THEME ─────────────────────────────────────────────────────
+function setTheme(t){
+  vib(20);
+  document.body.classList.toggle('light',t==='light');
+  localStorage.setItem('fnx_theme',t);
+  renderProfileTab();
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',t==='light'?'#ffffff':'#0d1117');
+}
+
+// ── SHARE APP ─────────────────────────────────────────────────
+function shareApp(){
+  const text='🎓 FUTA NEXUS — Free CBT Practice Hub for 100L FUTA Students!\n\n✅ 1,430+ verified past questions\n⏱️ Real timed exam simulation\n📊 Track your mastery by topic\n\nNo download. Works offline. 100% Free.\n👉 '+APP_URL;
+  if(navigator.share){navigator.share({title:'FUTA NEXUS',text,url:APP_URL}).catch(()=>{});}
+  else if(navigator.clipboard){navigator.clipboard.writeText(APP_URL+'\n\n'+text).then(()=>toast('Link copied! 📋','s'));}
+}
+
+// ── RATING ────────────────────────────────────────────────────
+function setRating(v){
+  selectedRatingVal=v;
+  const labels=['','Needs work','Fair','Good!','Very helpful!','Brilliant! 🔥'];
+  document.querySelectorAll('#star-row span').forEach(s=>{
+    const sv=parseInt(s.dataset.v);
+    s.textContent=sv<=v?'⭐':'☆';
+  });
+  const rl=document.getElementById('rating-label');
+  if(rl)rl.textContent=labels[v]||'';
+}
+
+function submitRating(){
+  if(!selectedRatingVal){toast('Please tap a star first','w');return;}
+  localStorage.setItem('fnx_rating',selectedRatingVal);
+  closeModal('modal-rating');
+  toast('Thanks for the '+selectedRatingVal+'-star rating! 🙏','s');
+  vib([20,15,30]);
+}
+
+// ── DATA ──────────────────────────────────────────────────────
+function clearData(){
+  if(confirm('This will erase all test history, mastery data and your profile. Are you sure?')){
+    localStorage.clear();location.reload();
+  }
+}
+
+// ── MODALS ────────────────────────────────────────────────────
+function openModal(id){const el=document.getElementById(id);if(el)el.classList.remove('hidden');vib(15);}
+function closeModal(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hidden');});
+});
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg,type){
+  type=type||'s';
+  const wrap=document.getElementById('toast-wrap');
+  if(!wrap)return;
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  t.textContent=msg;
+  wrap.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),280);},2600);
+}
+
+// ── KEYBOARD SHORTCUTS ────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(!overlayStack.includes('exam'))return;
+  if(e.key==='ArrowLeft')prevQ();
+  if(e.key==='ArrowRight')nextQ();
+  if(e.key==='f'||e.key==='F')toggleFlag();
+  if(['1','2','3','4','5'].includes(e.key))chooseOpt(parseInt(e.key)-1);
+});
+
+// ── STARTUP ───────────────────────────────────────────────────────
+// Apply theme immediately before anything renders
+if(localStorage.getItem('fnx_theme')==='light') document.body.classList.add('light');
+
+window.addEventListener('DOMContentLoaded',()=>{
+  // Hard guarantee: splash hides within 2 seconds no matter what
+  const splashFallback = setTimeout(hideSplash, 2000);
+  init()
+    .catch(err => console.error('FUTA NEXUS init error:', err))
+    .finally(()=>{
+      clearTimeout(splashFallback);
+      hideSplash();
+    });
+});
+</script>
+</body>
+</html>
