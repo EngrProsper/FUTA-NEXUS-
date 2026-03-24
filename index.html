@@ -12,7 +12,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#0d1117"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="description" content="Free CBT practice for 100-level FUTA students. 1,430+ verified past questions with full explanations, timed exam mode, and topic mastery tracking."/>
+<meta name="description" content="FUTA NEXUS — CBT practice platform for 100-level FUTA students. Thousands of verified past questions, timed exam simulation, topic mastery tracking and full explanations. Free, no download, works offline."/>
 <title>FUTA NEXUS — CBT Practice Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -52,14 +52,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
 .hidden{display:none!important}
 button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none;color:inherit}
 
-/* ── SPLASH ── */
-@keyframes splashLogoIn{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
-@keyframes splashNameIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes splashFadeOut{from{opacity:1}to{opacity:0;pointer-events:none}}
-#splash{position:fixed;inset:0;background:#0d1117;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;z-index:9999;gap:1.2rem}
-#splash-logo{animation:splashLogoIn .55s cubic-bezier(.34,1.56,.64,1) .1s both}
-#splash-name{animation:splashNameIn .4s ease .4s both;text-align:center}
+
 
 /* ── TOPBAR ── */
 .topbar{height:var(--top-h);background:var(--surface);border-bottom:1px solid var(--border);
@@ -201,15 +194,15 @@ select.form-input option{background:var(--surface2)}
   border:1px solid rgba(0,188,212,.25);border-radius:99px;padding:.22rem .7rem;
   font-size:.68rem;font-weight:700;color:var(--cyan);margin-bottom:.75rem;letter-spacing:.04em}
 .hero-headline{font-size:1.65rem;font-weight:900;line-height:1.15;letter-spacing:-.025em;
-  margin-bottom:.5rem;color:var(--text)}
+  margin-bottom:.5rem;color:#e6edf3}
 .hero-headline em{color:var(--cyan);font-style:normal;background:linear-gradient(135deg,#00BCD4,#2f81f7);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:.82rem;color:var(--muted2);line-height:1.6;margin-bottom:1rem}
+.hero-sub{font-size:.82rem;color:rgba(230,237,243,.6);line-height:1.6;margin-bottom:1rem}
 .hero-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1.1rem}
-.hero-stat{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;
+.hero-stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;
   padding:.65rem .5rem;text-align:center}
-.hero-stat-val{font-size:1.2rem;font-weight:900;color:var(--text);line-height:1}
-.hero-stat-lbl{font-size:.58rem;font-weight:600;color:var(--muted);text-transform:uppercase;
+.hero-stat-val{font-size:1.2rem;font-weight:900;color:#e6edf3;line-height:1}
+.hero-stat-lbl{font-size:.58rem;font-weight:600;color:rgba(230,237,243,.45);text-transform:uppercase;
   letter-spacing:.07em;margin-top:.2rem}
 .hero-cta{width:100%;padding:.75rem;font-size:.92rem;font-weight:800;border-radius:12px;
   background:linear-gradient(135deg,var(--cyan),#2f81f7);color:#fff;border:none;cursor:pointer;
@@ -501,32 +494,7 @@ select.form-input option{background:var(--surface2)}
 </head>
 <body>
 
-<!-- ══ SPLASH ══ -->
-<div id="splash">
-  <div id="splash-logo" style="width:88px;height:88px;border-radius:22px;
-    background:linear-gradient(145deg,#1a237e,#1565c0);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 0 40px rgba(0,188,212,.25),0 8px 32px rgba(0,0,0,.5)">
-    <svg width="52" height="52" viewBox="0 0 100 100" fill="none">
-      <path d="M48,18 C48,18 38,16 30,22 C22,28 20,38 24,46 C26,50 30,52 30,52 C30,52 22,56 22,64 C22,72 28,80 36,82 C42,84 48,80 48,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-      <path d="M52,18 C52,18 62,16 70,22 C78,28 80,38 76,46 C74,50 70,52 70,52 C70,52 78,56 78,64 C78,72 72,80 64,82 C58,84 52,80 52,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-      <line x1="50" y1="14" x2="50" y2="86" stroke="white" stroke-width="3" stroke-linecap="round"/>
-      <line x1="30" y1="50" x2="44" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="56" y1="50" x2="70" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-      <circle cx="30" cy="50" r="4.5" fill="#00E5FF"/>
-      <circle cx="70" cy="50" r="4.5" fill="#00E5FF"/>
-      <circle cx="50" cy="20" r="3.8" fill="#00BCD4"/>
-      <circle cx="50" cy="80" r="3.8" fill="#00BCD4"/>
-    </svg>
-  </div>
-  <div id="splash-name">
-    <div style="font-weight:900;font-size:1.7rem;letter-spacing:.1em;line-height:1">
-      <span style="color:#ffffff">FUTA</span><span style="color:#00BCD4"> NEXUS</span>
-    </div>
-    <div style="font-size:.63rem;color:rgba(255,255,255,.3);letter-spacing:.2em;
-      text-transform:uppercase;margin-top:.35rem;font-weight:500">CBT Practice Hub</div>
-  </div>
-</div>
+
 
 <!-- ══ TOPBAR ══ -->
 <div class="topbar">
@@ -538,15 +506,6 @@ select.form-input option{background:var(--surface2)}
       <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
     <div style="display:flex;align-items:center;gap:.45rem">
-      <div class="brand-logo">
-        <svg width="16" height="16" viewBox="0 0 100 100" fill="none">
-          <path d="M48,18 C38,16 30,22 22,28 C20,38 24,46 30,52 C22,56 22,64 28,80 C42,84 48,80 48,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <path d="M52,18 C62,16 70,22 78,28 C80,38 76,46 70,52 C78,56 78,64 72,80 C58,84 52,80 52,80" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <line x1="50" y1="14" x2="50" y2="86" stroke="white" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="30" cy="50" r="4" fill="#00E5FF"/>
-          <circle cx="70" cy="50" r="4" fill="#00E5FF"/>
-        </svg>
-      </div>
       <div class="brand-name"><span style="color:var(--text)">FUTA</span><span class="brand-nexus"> NEXUS</span></div>
     </div>
   </div>
@@ -566,15 +525,6 @@ select.form-input option{background:var(--surface2)}
 <div class="drawer" id="drawer">
   <div class="drawer-head">
     <div style="display:flex;align-items:center;gap:.55rem">
-      <div class="brand-logo" style="width:30px;height:30px;border-radius:8px">
-        <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
-          <path d="M48,18 C38,16 30,22 22,28 C20,38 24,46 30,52 C22,56 22,64 28,80 C42,84 48,80 48,80" stroke="white" stroke-width="4" stroke-linecap="round" fill="none"/>
-          <path d="M52,18 C62,16 70,22 78,28 C80,38 76,46 70,52 C78,56 78,64 72,80 C58,84 52,80 52,80" stroke="white" stroke-width="4" stroke-linecap="round" fill="none"/>
-          <line x1="50" y1="14" x2="50" y2="86" stroke="white" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="30" cy="50" r="5" fill="#00E5FF"/>
-          <circle cx="70" cy="50" r="5" fill="#00E5FF"/>
-        </svg>
-      </div>
       <div>
         <div style="font-weight:900;font-size:.88rem;letter-spacing:.06em"><span>FUTA</span><span style="color:#00BCD4"> NEXUS</span></div>
         <div style="font-size:.62rem;color:var(--muted)">100L · 2025/2026</div>
@@ -612,9 +562,13 @@ select.form-input option{background:var(--surface2)}
     Share App
   </button>
   <div class="drawer-footer">
-    <div style="font-weight:700;font-size:.77rem"><span style="color:var(--text)">Built by </span><span style="color:var(--cyan)">Prosper</span></div>
-    <div style="font-size:.68rem;color:var(--muted);font-style:italic;margin-top:.12rem">Building solutions for the future</div>
-    <div style="font-size:.62rem;color:var(--muted);margin-top:.3rem">FUTA NEXUS v3.0</div>
+    <div style="font-size:.72rem;font-weight:900;letter-spacing:.06em;margin-bottom:.28rem">
+      <span style="color:var(--muted2)">NEX</span><span style="color:#00BCD4">LABS</span>
+    </div>
+    <div style="font-size:.67rem;color:var(--muted);line-height:1.55">
+      FUTA NEXUS is a NexLabs product — building intelligent tools for students.
+    </div>
+    <div style="font-size:.6rem;color:var(--border2);margin-top:.38rem">FUTA NEXUS v3.0 · 100L · 2025/2026</div>
   </div>
 </div>
 
@@ -640,7 +594,7 @@ select.form-input option{background:var(--surface2)}
   </div>
   <div class="hero-stats-row">
         <div class="hero-stat">
-          <div class="hero-stat-val" id="hero-q-count">1,430+</div>
+          <div class="hero-stat-val" id="hero-q-count">1,000+</div>
           <div class="hero-stat-lbl">Questions</div>
         </div>
         <div class="hero-stat">
@@ -660,7 +614,7 @@ select.form-input option{background:var(--surface2)}
   </div>
 
   <!-- OFFLINE BANNER (hidden by default) -->
-  <div class="offline-banner hidden" id="offline-banner">
+<div class="offline-banner hidden" id="offline-banner">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 6s4-5 11-5 11 5 11 5"/><path d="M5 10s3.33-3 7-3 7 3 7 3"/><path d="M9 14s1.67-1 3-1 3 1 3 1"/><path d="M22 2L2 22"/></svg>
     Offline mode — open on GitHub Pages for full access to questions
   </div>
@@ -898,13 +852,57 @@ select.form-input option{background:var(--surface2)}
     <button class="btn btn-ghost btn-sm" onclick="clearData()">🗑 Clear All Data</button>
   </div>
   <div class="divider"></div>
-  <div style="padding:.9rem 1rem;text-align:center">
-    <div style="font-size:.78rem;color:var(--muted2);margin-bottom:.22rem">FUTA NEXUS · v3.0</div>
-    <div style="font-size:.72rem;color:var(--muted)">Built by <strong style="color:var(--cyan)">Prosper</strong> · Building solutions for the future</div>
-    <div style="margin-top:.7rem;display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap">
+
+  <!-- ── ABOUT ── -->
+  <div class="sh" style="padding-bottom:.2rem"><h2 style="font-size:.85rem">About</h2></div>
+  <div style="padding:.2rem 1rem 1.5rem">
+
+    <!-- App card -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rb);
+      padding:1rem;margin-bottom:.7rem">
+      <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.75rem">
+        <div style="width:42px;height:42px;border-radius:10px;overflow:hidden;flex-shrink:0;
+          background:var(--surface2)">
+          <img src="https://raw.githubusercontent.com/EngrProsper/FUTA-NEXUS/main/logo_image.jpg"
+            style="width:100%;height:100%;object-fit:cover;display:block"
+            onerror="this.style.display='none'" alt=""/>
+        </div>
+        <div>
+          <div style="font-weight:800;font-size:.92rem">FUTA <span style="color:var(--cyan)">NEXUS</span></div>
+          <div style="font-size:.68rem;color:var(--muted2)">CBT Practice Hub · v3.0</div>
+        </div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted2);line-height:1.7;margin-bottom:.55rem">
+        FUTA NEXUS is the CBT preparation platform built specifically for 100-level students at the Federal University of Technology Akure. It gives you access to thousands of verified past questions across all core 100L courses — with real timed exam simulations, instant answer explanations, and personal mastery tracking.
+      </p>
+      <p style="font-size:.78rem;color:var(--muted2);line-height:1.7">
+        The platform is free, requires no download, and works fully offline. New questions, courses, and premium features are continuously being added.
+      </p>
+    </div>
+
+    <!-- NexLabs branding -->
+    <div style="background:rgba(0,188,212,.04);border:1px solid rgba(0,188,212,.14);
+      border-radius:var(--r);padding:.85rem;display:flex;align-items:center;
+      gap:.75rem;margin-bottom:.75rem">
+      <div style="font-weight:900;font-size:1.05rem;letter-spacing:.07em;
+        line-height:1;flex-shrink:0">
+        <span style="color:var(--text)">NEX</span><span style="color:#00BCD4">LABS</span>
+      </div>
+      <div style="font-size:.74rem;color:var(--muted2);line-height:1.6;
+        border-left:1px solid var(--border);padding-left:.75rem">
+        FUTA NEXUS is a product of <strong style="color:var(--text)">NexLabs</strong> — building intelligent digital tools that solve real problems for students and communities.
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.8rem">
       <button class="btn btn-ghost btn-sm" onclick="shareApp()">📤 Share App</button>
       <button class="btn btn-ghost btn-sm" onclick="openModal('modal-rating')">⭐ Rate</button>
       <button class="btn btn-ghost btn-sm" onclick="showOverlay('bugs')">🐛 Report Bug</button>
+    </div>
+
+    <div style="font-size:.62rem;color:var(--border2);text-align:center">
+      © 2025 NexLabs · All rights reserved
     </div>
   </div>
 </div>
@@ -1188,8 +1186,8 @@ select.form-input option{background:var(--surface2)}
 <script>
 // ╔═══════════════════════════════════════════════════════════╗
 // ║  FUTA NEXUS v3.0 — CBT Practice Hub                      ║
-// ║  Built by Prosper · Building solutions for the future    ║
-// ║  Phase 1 update: all fixes + flashcards + score image    ║
+// ║  A NexLabs Product · nexlabs.dev                         ║
+// ║  © 2025 NexLabs. All rights reserved.                    ║
 // ╚═══════════════════════════════════════════════════════════╝
 
 const GIST_URL = 'https://gist.githubusercontent.com/EngrProsper/12201ebd0ad9443595890a9657d2d7c3/raw/futa_cbt_questions.json';
@@ -1329,13 +1327,7 @@ function markAllNotifRead(){
 // ── HAPTICS ───────────────────────────────────────────────────
 function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 
-// ── SPLASH ────────────────────────────────────────────────────
-function hideSplash(){
-  const s=document.getElementById('splash');
-  if(!s||s.style.display==='none')return;
-  s.style.animation='splashFadeOut .4s ease forwards';
-  setTimeout(()=>{if(s)s.style.display='none';},400);
-}
+
 
 // ── INIT — CRITICAL FIX: show app immediately, fetch in background ──
 async function init(){
@@ -2294,7 +2286,7 @@ function shareScoreCard(){
     ctx.beginPath();ctx.moveTo(60,720);ctx.lineTo(740,720);ctx.stroke();
 
     // ── CTA BOX ──
-ctx.fillStyle='rgba(0,188,212,0.1)';
+    ctx.fillStyle='rgba(0,188,212,0.1)';
     roundRect(ctx,60,740,680,180,16);
     ctx.fill();
     ctx.strokeStyle='rgba(0,188,212,0.25)';
@@ -2305,7 +2297,7 @@ ctx.fillStyle='rgba(0,188,212,0.1)';
     ctx.fillStyle='#00BCD4';
     ctx.font='700 16px Inter, Arial';
     ctx.textAlign='left';
-    ctx.fillText('🎯 Practice with 1,430+ verified FUTA past questions',80,780);
+    ctx.fillText('🎯 Practice with thousands of verified FUTA past questions',80,780);
 
     ctx.fillStyle='rgba(255,255,255,0.7)';
     ctx.font='500 14px Inter, Arial';
@@ -2329,7 +2321,7 @@ ctx.fillStyle='rgba(0,188,212,0.1)';
     canvas.toBlob(async(blob)=>{
       if(!blob){toast('Could not generate image','e');return;}
       const file=new File([blob],'futa-nexus-score.png',{type:'image/png'});
-      const shareText=`🎯 I just scored ${pct}% on ${courseName} CBT!\n✅ Practice with 1,430+ verified FUTA past questions\n👉 ${APP_URL}\n\nFree for all 100L FUTA students — FUTA NEXUS 🔥`;
+      const shareText=`🎯 I just scored ${pct}% on ${courseName} CBT!\n✅ Practice with thousands of verified FUTA past questions\n👉 ${APP_URL}\n\nFree for all 100L FUTA students — FUTA NEXUS 🔥`;
       if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
         try{
           await navigator.share({files:[file],title:'FUTA NEXUS Score',text:shareText});
@@ -2354,7 +2346,7 @@ ctx.fillStyle='rgba(0,188,212,0.1)';
   } catch(err){
     console.error('Score card error:',err);
     // Fallback to text share
-    const shareText=`🎯 I just scored ${lastResult.pct}% on ${lastResult.courseName||lastResult.course} CBT!\n✅ ${lastResult.correct}/${lastResult.total} correct · ${Math.floor(lastResult.elapsed/60)}m taken\n\nPractice with 1,430+ verified FUTA past questions 👉 ${APP_URL}`;
+    const shareText=`🎯 I just scored ${lastResult.pct}% on ${lastResult.courseName||lastResult.course} CBT!\n✅ ${lastResult.correct}/${lastResult.total} correct · ${Math.floor(lastResult.elapsed/60)}m taken\n\nPractice with thousands of verified FUTA past questions 👉 ${APP_URL}`;
     shareTextFallback(shareText);
   }
 }
@@ -2491,221 +2483,3 @@ function fcPrev(){
 }
 
 // ── TIMETABLE ─────────────────────────────────────────────────
-function renderTimetable(){
-  const grid=document.getElementById('tt-grid');
-  if(!grid)return;
-  grid.innerHTML=TIMETABLE.map(t=>{
-    const d=daysUntil(t.date);
-    const isPast=d<0,isToday=d===0,isSoon=d>0&&d<=3;
-    const badge=isPast?'<span class="badge b-gray">Done</span>':
-      isToday?'<span class="badge b-red blink">TODAY</span>':
-      d===1?'<span class="badge b-amber">Tomorrow</span>':
-      '<span class="badge b-blue">'+d+' days</span>';
-    const hasCourse=!!COURSES[t.code];
-    return `<div class="tt-card${isToday?' today':isSoon?' soon':''}${isPast?' past':''}">
-      <div><div style="font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em">${t.day}</div>
-      <div style="font-weight:700;font-size:.95rem;margin:.1rem 0">${t.course}</div>
-      <div style="font-size:.75rem;color:var(--muted2)">CBT · ${t.time}</div></div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">${badge}
-        ${hasCourse&&!isPast?`<button class="btn btn-xs btn-primary" onclick="pickCourse('${t.code}');gotoTab('practice');closeDrawer()">Practice →</button>`:''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ── TUTOR CHAT ────────────────────────────────────────────────
-const chatKB=[
-  {k:['ohm','voltage','current','resistance'],   a:"<strong>Ohm's Law:</strong> V = IR. Voltage = Current × Resistance. Units: V, A, Ω."},
-  {k:['kinetic','ke ','half mv'],                a:'<strong>Kinetic Energy:</strong> KE = ½mv². Mass m (kg), velocity v (m/s). Unit: Joules.'},
-  {k:['potential','mgh','gravity','height'],     a:'<strong>Gravitational PE:</strong> PE = mgh. g = 9.8 m/s². Unit: Joules.'},
-  {k:['newton','f=ma','force','acceleration'],   a:'<strong>Newton 2nd Law:</strong> F = ma. Net force = mass × acceleration. Unit: Newton (N).'},
-  {k:['arithmetic','ap ','common difference'],   a:'<strong>AP:</strong> Tₙ = a+(n−1)d. Sₙ = n/2[2a+(n−1)d]. a = first term, d = common difference.'},
-  {k:['geometric','gp ','common ratio'],         a:'<strong>GP:</strong> Tₙ = arⁿ⁻¹. Sₙ = a(rⁿ−1)/(r−1). Sum to infinity = a/(1−r) when |r|<1.'},
-  {k:['binomial','pascal','expansion'],          a:"<strong>Binomial:</strong> (a+x)ⁿ = Σ C(n,r)aⁿ⁻ʳxʳ. C(n,r) = n!/[r!(n−r)!]."},
-  {k:['set theory','venn','union','intersect'],  a:'<strong>Sets:</strong> A∪B = all in A or B. A∩B = in both. |A∪B| = |A|+|B|−|A∩B|.'},
-  {k:['induction','mathematical'],               a:'<strong>Induction:</strong> (1) Prove n=1. (2) Assume n=k. (3) Prove n=k+1.'},
-  {k:['half.life','half life','t1/2'],           a:"<strong>Half-life (1st order):</strong> t½ = 0.693/k = ln2/k. It's constant regardless of concentration."},
-  {k:['equilibrium','le chatelier','kc','kp'],   a:'<strong>Equilibrium:</strong> Kc = [products]/[reactants]. Le Chatelier: system opposes imposed changes.'},
-  {k:['oxidation','reduction','redox'],          a:'<strong>Redox:</strong> Oxidation = loss of electrons (OIL). Reduction = gain of electrons (RIG). OIL RIG.'},
-  {k:['faraday','electrolysis'],                 a:'<strong>Faraday:</strong> Mass = QE/96500 × molar_mass/charge. Q = It (coulombs).'},
-  {k:['gazetteer','geographical dictionary'],    a:'<strong>Gazetteer:</strong> Geographical dictionary listing places, populations, features.'},
-  {k:['opac','catalogue','library'],             a:'<strong>OPAC:</strong> Online Public Access Catalogue. Search by author, title, subject, call number.'},
-  {k:['binary','decimal','hex','octal'],         a:'<strong>Number systems:</strong> Binary (base 2), Octal (base 8), Decimal (base 10), Hex (base 16).'},
-  {k:['logic gate','and gate','or gate','xor'],  a:'<strong>Gates:</strong> AND=all inputs HIGH. OR=any input HIGH. XOR=inputs different. NAND=universal gate.'},
-  {k:['dalton','atom','proton','electron'],      a:'<strong>Atom:</strong> Proton(+1,1amu), Neutron(0,1amu), Electron(−1,negligible). Atomic number=protons.'},
-  {k:['topic sentence','paragraph','skimming'],  a:'<strong>Reading:</strong> Topic sentence = main idea of paragraph. Skimming = quick overview. Scanning = find specific info.'},
-];
-
-function sendChat(){
-  const inp=document.getElementById('chat-input');
-  const msg=inp?inp.value.trim():'';
-  if(!msg)return;
-  addChatMsg(msg,'user');
-  inp.value='';
-  setTimeout(()=>{
-    const q=msg.toLowerCase();
-    let ans="I'm not sure about that yet. Try asking about: Ohm's Law, kinetic energy, equilibrium, half-life, binary numbers, logic gates, AP/GP, set theory, or library science.";
-    for(const e of chatKB){if(e.k.some(k=>q.includes(k))){ans=e.a;break;}}
-    addChatMsg(ans,'bot');
-  },400);
-}
-
-function addChatMsg(text,type){
-  const wrap=document.getElementById('chat-messages');
-  if(!wrap)return;
-  const div=document.createElement('div');
-  div.className='chat-msg chat-'+type;
-  div.innerHTML=text;
-  wrap.appendChild(div);
-  wrap.scrollTop=wrap.scrollHeight;
-}
-
-// ── FAQ ───────────────────────────────────────────────────────
-function renderFAQ(){
-  const list=document.getElementById('faq-list');
-  if(!list||list.children.length)return;
-  list.innerHTML=FAQS.map((f,i)=>
-    `<div class="faq-item" id="faq-${i}">
-      <div class="faq-q" onclick="toggleFAQ(${i})">
-        <span>${f.q}</span>
-        <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-      <div class="faq-a">${f.a}</div>
-    </div>`
-  ).join('');
-}
-function toggleFAQ(i){document.getElementById('faq-'+i)?.classList.toggle('open');}
-
-// ── BUG REPORT ────────────────────────────────────────────────
-function submitBug(){
-  const desc=document.getElementById('bug-desc')?.value.trim();
-  if(!desc){toast('Please describe the issue','e');return;}
-  const type=document.getElementById('bug-type')?.value||'Other';
-  const course=document.getElementById('bug-course')?.value||'General';
-  const name=document.getElementById('bug-name')?.value||'Anonymous';
-  const msg='FUTA NEXUS Bug Report\nFrom: '+name+'\nType: '+type+'\nCourse: '+course+'\nDetails: '+desc;
-  window.open('https://wa.me/2347084139752?text='+encodeURIComponent(msg),'_blank');
-  const ok=document.getElementById('bug-ok');
-  if(ok)ok.classList.remove('hidden');
-  const bd=document.getElementById('bug-desc');
-  if(bd)bd.value='';
-  toast('Report sent via WhatsApp!','s');
-}
-
-// ── LOGIN ─────────────────────────────────────────────────────
-function doLogin(){
-  const name=document.getElementById('login-name')?.value.trim();
-  if(!name){toast('Please enter your name','e');return;}
-  userProfile={
-    name,
-    matric:document.getElementById('login-matric')?.value.trim()||'',
-    dept:document.getElementById('login-dept')?.value.trim()||'',
-  };
-  localStorage.setItem('fnx_user',JSON.stringify(userProfile));
-  closeModal('modal-login');
-  updateUserUI();
-  toast('Welcome, '+name.split(' ')[0]+'!','s');
-  vib([30,20,30]);
-}
-
-function doSignout(){
-  if(confirm('Sign out and clear profile?')){
-    userProfile=null;
-    localStorage.removeItem('fnx_user');
-    updateUserUI();
-    renderProfileTab();
-    toast('Signed out','w');
-  }
-}
-
-function updateUserUI(){renderProfileTab();renderHomeTab();}
-
-// ── THEME ─────────────────────────────────────────────────────
-function setTheme(t){
-  vib(20);
-  document.body.classList.toggle('light',t==='light');
-  localStorage.setItem('fnx_theme',t);
-  renderProfileTab();
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',t==='light'?'#ffffff':'#0d1117');
-}
-
-// ── SHARE APP ─────────────────────────────────────────────────
-function shareApp(){
-  const text='🎓 FUTA NEXUS — Free CBT Practice Hub for 100L FUTA Students!\n\n✅ 1,430+ verified past questions\n⏱️ Real timed exam simulation\n📊 Track your mastery by topic\n\nNo download. Works offline. 100% Free.\n👉 '+APP_URL;
-  if(navigator.share){navigator.share({title:'FUTA NEXUS',text,url:APP_URL}).catch(()=>{});}
-  else if(navigator.clipboard){navigator.clipboard.writeText(APP_URL+'\n\n'+text).then(()=>toast('Link copied! 📋','s'));}
-}
-
-// ── RATING ────────────────────────────────────────────────────
-function setRating(v){
-  selectedRatingVal=v;
-  const labels=['','Needs work','Fair','Good!','Very helpful!','Brilliant! 🔥'];
-  document.querySelectorAll('#star-row span').forEach(s=>{
-    const sv=parseInt(s.dataset.v);
-    s.textContent=sv<=v?'⭐':'☆';
-  });
-  const rl=document.getElementById('rating-label');
-  if(rl)rl.textContent=labels[v]||'';
-}
-
-function submitRating(){
-  if(!selectedRatingVal){toast('Please tap a star first','w');return;}
-  localStorage.setItem('fnx_rating',selectedRatingVal);
-  closeModal('modal-rating');
-  toast('Thanks for the '+selectedRatingVal+'-star rating! 🙏','s');
-  vib([20,15,30]);
-}
-
-// ── DATA ──────────────────────────────────────────────────────
-function clearData(){
-  if(confirm('This will erase all test history, mastery data and your profile. Are you sure?')){
-    localStorage.clear();location.reload();
-  }
-}
-
-// ── MODALS ────────────────────────────────────────────────────
-function openModal(id){const el=document.getElementById(id);if(el)el.classList.remove('hidden');vib(15);}
-function closeModal(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');}
-document.querySelectorAll('.modal-overlay').forEach(m=>{
-  m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hidden');});
-});
-
-// ── TOAST ─────────────────────────────────────────────────────
-function toast(msg,type){
-  type=type||'s';
-  const wrap=document.getElementById('toast-wrap');
-  if(!wrap)return;
-  const t=document.createElement('div');
-  t.className='toast '+type;
-  t.textContent=msg;
-  wrap.appendChild(t);
-  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
-  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),280);},2600);
-}
-
-// ── KEYBOARD SHORTCUTS ────────────────────────────────────────
-document.addEventListener('keydown',e=>{
-  if(!overlayStack.includes('exam'))return;
-  if(e.key==='ArrowLeft')prevQ();
-  if(e.key==='ArrowRight')nextQ();
-  if(e.key==='f'||e.key==='F')toggleFlag();
-  if(['1','2','3','4','5'].includes(e.key))chooseOpt(parseInt(e.key)-1);
-});
-
-// ── STARTUP ───────────────────────────────────────────────────────
-// Apply theme immediately before anything renders
-if(localStorage.getItem('fnx_theme')==='light') document.body.classList.add('light');
-
-window.addEventListener('DOMContentLoaded',()=>{
-  // Hard guarantee: splash hides within 2 seconds no matter what
-  const splashFallback = setTimeout(hideSplash, 2000);
-  init()
-    .catch(err => console.error('FUTA NEXUS init error:', err))
-    .finally(()=>{
-      clearTimeout(splashFallback);
-      hideSplash();
-    });
-});
-</script>
-</body>
-</html>
