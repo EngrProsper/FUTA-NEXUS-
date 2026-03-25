@@ -54,14 +54,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none
 
 
 /* ── SPLASH (with logo animation) ── */
-@keyframes splashLogoIn {
-  0% { opacity: 0; transform: scale(0.9); }
-  100% { opacity: 1; transform: scale(1); }
-}
-@keyframes splashBylineIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
+/* ── SPLASH (clean fade in/out) ── */
 @keyframes splashFadeOut {
   from { opacity: 1; }
   to { opacity: 0; pointer-events: none; }
@@ -74,13 +67,23 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  animation: splashFadeIn 0.4s ease forwards;
+}
+@keyframes splashFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .splash-content {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
 }
 .splash-logo {
-  margin-bottom: 2rem;
-  animation: splashLogoIn 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) both;
+  text-align: center;
 }
 .splash-logo img {
   width: 210px;
@@ -89,16 +92,25 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none
   margin: 0 auto;
 }
 .splash-byline {
+  position: absolute;
+  bottom: 2rem;
+  left: 0;
+  right: 0;
+  text-align: center;
   font-size: 0.75rem;
   font-weight: 500;
   color: rgba(255,255,255,0.5);
   letter-spacing: 0.05em;
-  animation: splashBylineIn 0.5s ease 0.3s both;
 }
-.splash-byline .nexlabs {
+.splash-byline .nexlabs-word {
+  color: #fff;
+}
+.splash-byline .nexlabs-word .nex {
+  color: #fff;
+}
+.splash-byline .nexlabs-word .labs {
   color: #00BCD4;
   font-weight: 800;
-  letter-spacing: 0.1em;
   }
 /* ── TOPBAR ── */
 .topbar{height:var(--top-h);background:var(--surface);border-bottom:1px solid var(--border);
@@ -545,10 +557,11 @@ select.form-input option{background:var(--surface2)}
 <div id="splash">
   <div class="splash-content">
     <div class="splash-logo">
-      <img src="https://raw.githubusercontent.com/EngrProsper/FUTA-NEXUS-/main/logo_image.png" alt="FUTA NEXUS" />
+      <img src="https://raw.githubusercontent.com/EngrProsper/FUTA-NEXUS-/main/futa_nexus_logo.png" alt="FUTA NEXUS" />
     </div>
     <div class="splash-byline">
-      <span>powered by</span> <span class="nexlabs">NEXLABS</span>
+      <span>powered by</span>
+      <span class="nexlabs-word"><span class="nex">NEX</span><span class="labs">LABS</span></span>
     </div>
   </div>
 </div>
