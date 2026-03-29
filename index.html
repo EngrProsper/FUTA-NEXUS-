@@ -345,8 +345,9 @@ select.form-input option{background:var(--surface2)}
 .opt.sel .opt-let{background:var(--accent);color:#fff;border-color:transparent}
 .opt.correct .opt-let{background:var(--green);color:#fff;border-color:transparent}
 .opt.wrong .opt-let{background:var(--red);color:#fff;border-color:transparent}
-.q-nav{display:flex;align-items:center;gap:.5rem;padding:.65rem 1rem;
-  background:var(--bg)}
+.q-nav{display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem;
+  background:var(--bg);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border)}
 .q-nav .btn{flex:1}
 .q-dot-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.28rem;padding:.85rem 1rem;
   border-top:1px solid var(--border)}
@@ -544,9 +545,6 @@ select.form-input option{background:var(--surface2)}
 .offline-banner{background:rgba(210,153,34,.1);border:1px solid rgba(210,153,34,.25);
   border-radius:8px;padding:.55rem .85rem;font-size:.75rem;color:var(--amber);
   margin:.6rem 1rem;display:flex;align-items:center;gap:.45rem}
-
-/* ── EXAM NAV TOP ── */
-.q-nav-top{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--border)}
 
 /* ── SHARE SCORE POPUP ── */
 .share-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);
@@ -832,7 +830,7 @@ select.form-input option{background:var(--surface2)}
   .screen:not(.overlay){max-width:860px;margin:0 auto;width:100%}
 
   /* Exam overlay inner content */
-  #screen-exam .q-nav-top,
+  #screen-exam .q-nav,
   #screen-exam .q-area,
   #screen-exam .q-dot-grid,
   #screen-exam #study-reveal-wrap{max-width:720px;margin:0 auto;width:100%}
@@ -1376,13 +1374,6 @@ select.form-input option{background:var(--surface2)}
 <!-- EXAM OVERLAY -->
 <div class="screen overlay" id="screen-exam">
   <div class="ep-bar"><div class="ep-fill" id="ep-fill" style="width:0"></div></div>
-  <!-- NAV ABOVE QUESTION (prev/next/flag visible before scrolling) -->
-  <div class="q-nav q-nav-top">
-    <button class="btn btn-ghost btn-sm" onclick="prevQ()">← Prev</button>
-    <button class="btn btn-sm" id="flag-btn" onclick="toggleFlag()"
-      style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(210,153,34,.25)">🚩 Flag</button>
-    <button class="btn btn-primary btn-sm" onclick="nextQ()">Next →</button>
-  </div>
   <div class="q-area">
     <div class="q-counter-row">
       <span class="q-counter" id="q-counter">Q 1 OF 25</span>
@@ -1396,6 +1387,13 @@ select.form-input option{background:var(--surface2)}
       <div class="sr-verdict" id="sr-verdict"></div>
       <div id="sr-expl" style="font-size:.82rem;color:var(--muted2);margin-top:.25rem"></div>
     </div>
+  </div>
+  <!-- NAV: after options, before dot grid — exactly where user navigates next -->
+  <div class="q-nav">
+    <button class="btn btn-ghost btn-sm" onclick="prevQ()">← Prev</button>
+    <button class="btn btn-sm" id="flag-btn" onclick="toggleFlag()"
+      style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(210,153,34,.25)">🚩 Flag</button>
+    <button class="btn btn-primary btn-sm" onclick="nextQ()">Next →</button>
   </div>
   <div class="q-dot-grid" id="q-dot-grid"></div>
 </div>
