@@ -67,6 +67,8 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none
   align-items: center;
   justify-content: center;
   opacity: 1;
+  transition: opacity 0.55s ease;
+  pointer-events: all;
 }
 .splash-content {
   display: flex;
@@ -344,7 +346,7 @@ select.form-input option{background:var(--surface2)}
 .opt.correct .opt-let{background:var(--green);color:#fff;border-color:transparent}
 .opt.wrong .opt-let{background:var(--red);color:#fff;border-color:transparent}
 .q-nav{display:flex;align-items:center;gap:.5rem;padding:.65rem 1rem;
-  border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--bg)}
+  background:var(--bg)}
 .q-nav .btn{flex:1}
 .q-dot-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.28rem;padding:.85rem 1rem;
   border-top:1px solid var(--border)}
@@ -542,6 +544,330 @@ select.form-input option{background:var(--surface2)}
 .offline-banner{background:rgba(210,153,34,.1);border:1px solid rgba(210,153,34,.25);
   border-radius:8px;padding:.55rem .85rem;font-size:.75rem;color:var(--amber);
   margin:.6rem 1rem;display:flex;align-items:center;gap:.45rem}
+
+/* ── EXAM NAV TOP ── */
+.q-nav-top{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--border)}
+
+/* ── SHARE SCORE POPUP ── */
+.share-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);z-index:500;display:flex;align-items:flex-end;
+  justify-content:center;padding:1rem;opacity:0;pointer-events:none;
+  transition:opacity .3s}
+.share-popup-overlay.open{opacity:1;pointer-events:all}
+.share-popup-box{background:var(--surface);border:1px solid var(--border);
+  border-radius:20px 20px 16px 16px;padding:1.5rem 1.4rem 1.4rem;width:100%;
+  max-width:440px;transform:translateY(40px);transition:transform .35s cubic-bezier(.2,.9,.4,1);
+  text-align:center}
+.share-popup-overlay.open .share-popup-box{transform:translateY(0)}
+.share-popup-score{font-size:3rem;font-weight:900;line-height:1;margin-bottom:.2rem}
+.share-popup-label{font-size:.78rem;color:var(--muted2);margin-bottom:1.1rem}
+.share-popup-msg{font-size:.9rem;font-weight:700;margin-bottom:.28rem}
+.share-popup-sub{font-size:.78rem;color:var(--muted2);margin-bottom:1.3rem;line-height:1.55}
+
+/* ══════════════════════════════════════════════
+   DESKTOP SIDEBAR — Claude/GitHub icon-rail style
+   Collapsed (default): 56px icon rail
+   Expanded: 220px icons + labels
+   Mobile: completely hidden, no effect
+   ══════════════════════════════════════════════ */
+
+/* Variables updated by JS when sidebar expands */
+:root{
+  --sb-w:56px;          /* collapsed icon rail width */
+  --sb-expanded:220px;  /* expanded width */
+}
+
+#desktop-sidebar{
+  /* Hidden by default on mobile */
+  display:none;
+  position:fixed;
+  top:0; left:0; bottom:0;
+  width:var(--sb-w);
+  z-index:100;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  flex-direction:column;
+  overflow:hidden;
+  /* Smooth expand/collapse */
+  transition:width .22s cubic-bezier(.4,0,.2,1);
+  /* Keep sidebar above topbar so toggle btn always accessible */
+}
+
+/* Expanded state */
+#desktop-sidebar.expanded{
+  width:var(--sb-expanded);
+}
+
+/* ── Sidebar toggle button (always at top) ── */
+.ds-toggle{
+  display:flex;align-items:center;justify-content:center;
+  width:56px;height:var(--top-h);
+  min-height:var(--top-h);
+  flex-shrink:0;
+  cursor:pointer;border:none;background:none;
+  color:var(--muted2);
+  transition:color .15s,background .15s;
+  border-bottom:1px solid var(--border);
+}
+.ds-toggle:hover{background:var(--surface2);color:var(--text)}
+
+/* ── Scrollable nav area ── */
+.ds-nav{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:.45rem 0;
+  scrollbar-width:none;
+}
+.ds-nav::-webkit-scrollbar{display:none}
+
+/* ── Section label (hidden when collapsed) ── */
+.ds-section{
+  padding:.55rem 1rem .2rem;
+  font-size:.58rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.1em;
+  white-space:nowrap;opacity:0;
+  transition:opacity .15s;
+  pointer-events:none;
+}
+#desktop-sidebar.expanded .ds-section{opacity:1}
+
+/* ── Nav item ── */
+.ds-item{
+  display:flex;align-items:center;
+  gap:.7rem;
+  width:100%;
+  height:44px;
+  /* Icon always centred in the 56px rail */
+  padding:0 0 0 0;
+  justify-content:flex-start;
+  font-size:.875rem;font-weight:500;
+  color:var(--muted2);
+  cursor:pointer;text-align:left;
+  border:none;background:none;
+  font-family:'Inter',sans-serif;
+  border-left:3px solid transparent;
+  transition:background .12s,color .12s,border-color .12s;
+  white-space:nowrap;overflow:hidden;
+  position:relative;
+}
+/* Icon wrapper always centred in 56px */
+.ds-item-icon{
+  width:56px;min-width:56px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:color .12s;
+}
+/* Label — invisible & takes no space when collapsed */
+.ds-item-label{
+  font-size:.86rem;font-weight:500;
+  opacity:0;
+  transition:opacity .15s;
+  white-space:nowrap;
+}
+#desktop-sidebar.expanded .ds-item-label{opacity:1}
+
+.ds-item:hover{background:var(--surface2);color:var(--text)}
+.ds-item:hover .ds-item-icon{color:var(--text)}
+.ds-item.active{
+  background:var(--accent-dim);
+  color:var(--accent);
+  font-weight:600;
+  border-left-color:var(--accent);
+}
+.ds-item.active .ds-item-icon{color:var(--accent)}
+.ds-item.active .ds-item-label{font-weight:600;color:var(--accent)}
+
+/* Tooltip on collapsed items */
+.ds-item[data-tip]:not(.no-tip):hover::after{
+  content:attr(data-tip);
+  position:absolute;
+  left:calc(var(--sb-w) + 6px);
+  top:50%;transform:translateY(-50%);
+  background:var(--surface3);
+  border:1px solid var(--border2);
+  color:var(--text);
+  font-size:.75rem;font-weight:600;
+  padding:.3rem .65rem;
+  border-radius:7px;
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:200;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+}
+#desktop-sidebar.expanded .ds-item[data-tip]::after{display:none}
+
+/* ── Practice button ── */
+.ds-practice-wrap{
+  padding:.4rem 0;
+}
+.ds-practice-btn{
+  display:flex;align-items:center;
+  gap:.7rem;
+  width:100%;height:44px;
+  padding:0;
+  border:none;background:none;
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:background .12s,color .12s;
+  overflow:hidden;white-space:nowrap;
+  position:relative;
+}
+.ds-practice-btn .ds-item-icon{
+  width:56px;min-width:56px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.ds-practice-icon-circle{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 10px rgba(47,129,247,.35);
+  transition:transform .15s,box-shadow .15s;
+  flex-shrink:0;
+}
+.ds-practice-btn:hover .ds-practice-icon-circle{
+  transform:scale(1.08);
+  box-shadow:0 4px 16px rgba(47,129,247,.5);
+}
+.ds-practice-btn.active .ds-practice-icon-circle{
+  box-shadow:0 0 0 2px var(--accent),0 4px 14px rgba(47,129,247,.4);
+}
+.ds-practice-label{
+  font-size:.86rem;font-weight:700;
+  color:var(--text);
+  opacity:0;transition:opacity .15s;
+  white-space:nowrap;
+}
+#desktop-sidebar.expanded .ds-practice-label{opacity:1}
+
+/* Tooltip for practice */
+.ds-practice-btn[data-tip]:hover::after{
+  content:attr(data-tip);
+  position:absolute;
+  left:calc(var(--sb-w) + 6px);
+  top:50%;transform:translateY(-50%);
+  background:var(--surface3);border:1px solid var(--border2);
+  color:var(--text);font-size:.75rem;font-weight:600;
+  padding:.3rem .65rem;border-radius:7px;
+  pointer-events:none;z-index:200;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+  white-space:nowrap;
+}
+#desktop-sidebar.expanded .ds-practice-btn[data-tip]::after{display:none}
+
+/* ── Divider ── */
+.ds-divider{
+  height:1px;background:var(--border);
+  margin:.3rem 0;
+}
+
+/* ── Footer ── */
+.ds-footer{
+  padding:.7rem 0;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;
+  overflow:hidden;
+}
+.ds-footer-icon{
+  width:56px;min-width:56px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;flex-shrink:0;
+}
+.ds-footer-text{
+  font-size:.67rem;color:var(--muted);
+  white-space:nowrap;
+  opacity:0;transition:opacity .15s;
+}
+.ds-footer-text strong{color:var(--cyan)}
+#desktop-sidebar.expanded .ds-footer-text{opacity:1}
+
+/* ══════════════════════════════════════════════
+   DESKTOP LAYOUT  ≥ 768px
+   ══════════════════════════════════════════════ */
+@media(min-width:768px){
+  /* Show sidebar, hide mobile nav */
+  #desktop-sidebar{display:flex}
+  .bottom-nav{display:none!important}
+  /* Hide hamburger — sidebar toggle handles it */
+  #menu-btn{display:none!important}
+  /* Kill the slide-out drawer entirely on desktop */
+  .drawer{display:none!important}
+  .drawer-overlay{display:none!important}
+
+  /* Topbar: full width */
+  .topbar{max-width:100%}
+
+  /* Main area indented by collapsed sidebar width */
+  .main{
+    margin-left:var(--sb-w);
+    padding-bottom:2rem;
+    transition:margin-left .22s cubic-bezier(.4,0,.2,1);
+  }
+  /* When sidebar expanded, main shifts further */
+  body.sidebar-open .main{
+    margin-left:var(--sb-expanded);
+  }
+
+  /* Overlays: start at sidebar edge */
+  .screen.overlay{
+    left:var(--sb-w);
+    right:0;width:auto;transform:none;
+    transition:left .22s cubic-bezier(.4,0,.2,1);
+  }
+  body.sidebar-open .screen.overlay{
+    left:var(--sb-expanded);
+  }
+
+  @keyframes dsIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .screen.overlay.active{animation:dsIn .18s ease both}
+
+  /* Topbar also nudges right */
+  .topbar{
+    padding-left:calc(var(--sb-w) + .85rem);
+    transition:padding-left .22s cubic-bezier(.4,0,.2,1);
+  }
+  body.sidebar-open .topbar{
+    padding-left:calc(var(--sb-expanded) + .85rem);
+  }
+
+  /* Tab content: centred readable column */
+  .screen:not(.overlay){max-width:860px;margin:0 auto;width:100%}
+
+  /* Exam overlay inner content */
+  #screen-exam .q-nav-top,
+  #screen-exam .q-area,
+  #screen-exam .q-dot-grid,
+  #screen-exam #study-reveal-wrap{max-width:720px;margin:0 auto;width:100%}
+  #screen-exam .ep-bar{max-width:100%}
+  #screen-results>div{max-width:520px;margin:0 auto}
+
+  /* Hero */
+  .hero-headline{font-size:2rem}
+  .hero-cta{max-width:320px}
+  .q-dot-grid{grid-template-columns:repeat(10,1fr)}
+  .course-grid{grid-template-columns:repeat(3,1fr)}
+  .modal-overlay{align-items:center}
+  .share-popup-overlay{align-items:center}
+  .share-popup-box{border-radius:16px}
+
+  /* Toast centred in main area */
+  .toast-wrap{
+    left:calc(var(--sb-w) + (100vw - var(--sb-w))/2);
+    bottom:1.5rem;
+    transition:left .22s;
+  }
+  body.sidebar-open .toast-wrap{
+    left:calc(var(--sb-expanded) + (100vw - var(--sb-expanded))/2);
+  }
+}
+
+@media(min-width:1200px){
+  .screen:not(.overlay){max-width:940px}
+  .hero-headline{font-size:2.2rem}
+}
+
+/* ── HERO URGENCY BOX ── */
+.hero-urgency-box{display:flex;align-items:center;gap:.45rem;margin-bottom:.9rem;
+  background:rgba(218,54,51,.1);border:1px solid rgba(218,54,51,.3);
+  border-radius:9px;padding:.55rem .85rem;font-size:.78rem;font-weight:700;color:var(--red)}
 </style>
 </head>
 <body>
@@ -579,7 +905,7 @@ select.form-input option{background:var(--surface2)}
     </button>
     <div class="streak-pill hidden" id="streak-pill"><span>🔥</span><span id="streak-num">0</span></div>
     <div class="exam-timer hidden" id="exam-timer">00:00</div>
-    <button class="btn btn-sm btn-danger hidden" id="submit-btn" onclick="confirmSubmit()" style="padding:.28rem .6rem;font-size:.72rem">Submit</button>
+    <button class="btn btn-sm btn-danger hidden" id="submit-btn" onclick="confirmSubmit()" style="padding:.28rem .75rem;font-size:.75rem;font-weight:700;letter-spacing:.02em">✓ Submit</button>
   </div>
 </div>
 
@@ -635,6 +961,86 @@ select.form-input option{background:var(--surface2)}
   </div>
 </div>
 
+<!-- ══ DESKTOP SIDEBAR — icon rail, collapsible (desktop only) ══ -->
+<nav id="desktop-sidebar" aria-label="Desktop navigation">
+
+  <!-- Toggle button — always at top, toggles expand/collapse -->
+  <button class="ds-toggle" id="ds-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+
+  <div class="ds-nav">
+
+    <button class="ds-item active" id="ds-btn-home" onclick="gotoTab('home')" data-tip="Home">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      <span class="ds-item-label">Home</span>
+    </button>
+
+    <button class="ds-item" id="ds-btn-courses" onclick="gotoTab('courses')" data-tip="Courses">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+      <span class="ds-item-label">Courses</span>
+    </button>
+
+    <div class="ds-practice-wrap">
+      <button class="ds-practice-btn" id="ds-btn-practice" onclick="gotoTab('practice')" data-tip="Practice">
+        <span class="ds-item-icon"><span class="ds-practice-icon-circle"><svg width="13" height="13" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"/></svg></span></span>
+        <span class="ds-practice-label">Practice</span>
+      </button>
+    </div>
+
+    <button class="ds-item" id="ds-btn-progress" onclick="gotoTab('progress')" data-tip="Progress">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+      <span class="ds-item-label">Progress</span>
+    </button>
+
+    <button class="ds-item" id="ds-btn-profile" onclick="gotoTab('profile')" data-tip="Profile">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span class="ds-item-label">Profile</span>
+    </button>
+
+    <div class="ds-divider"></div>
+    <div class="ds-section">Study</div>
+
+    <button class="ds-item" onclick="showOverlay('timetable')" data-tip="Timetable">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+      <span class="ds-item-label">Timetable</span>
+    </button>
+
+    <button class="ds-item" onclick="showOverlay('flashcards')" data-tip="Flashcards">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 12h8"/></svg></span>
+      <span class="ds-item-label">Flashcards</span>
+    </button>
+
+    <button class="ds-item" onclick="showOverlay('chat')" data-tip="Ask Tutor">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+      <span class="ds-item-label">Ask Tutor</span>
+    </button>
+
+    <div class="ds-divider"></div>
+
+    <button class="ds-item" onclick="showOverlay('notifications')" data-tip="Notifications">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+      <span class="ds-item-label">Notifications</span>
+    </button>
+
+    <button class="ds-item" onclick="shareApp()" data-tip="Share App">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span>
+      <span class="ds-item-label">Share App</span>
+    </button>
+
+    <button class="ds-item" onclick="showOverlay('bugs')" data-tip="Report Bug">
+      <span class="ds-item-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 2v4a4 4 0 0 0 8 0V2"/><path d="M4 10h16v6a8 8 0 0 1-16 0v-6z"/></svg></span>
+      <span class="ds-item-label">Report Bug</span>
+    </button>
+
+  </div>
+
+  <div class="ds-footer">
+    <span class="ds-footer-icon"><span style="font-size:.7rem;font-weight:900;color:var(--muted2)">NX</span></span>
+    <span class="ds-footer-text"><strong style="color:var(--cyan)">NEX</strong><span style="color:var(--muted2)">LABS</span> · v3.0</span>
+  </div>
+</nav>
+
 <!-- ══ MAIN ══ -->
 <div class="main" id="main">
 
@@ -649,19 +1055,16 @@ select.form-input option{background:var(--surface2)}
       <div class="hero-tag">🎓 FUTA 100-Level Students</div>
       <h1 class="hero-headline">Practice Past Questions<br><em>Under Exam Pressure</em></h1>
       <p class="hero-sub">The only CBT simulator that prepares you exactly the way FUTA will test you — timed, realistic, and with verified solutions.</p>
-      <div id="hero-urgency" style="display:none;margin-bottom:.9rem;
-    background:rgba(218,54,51,.1);border:1px solid rgba(218,54,51,.3);
-    border-radius:9px;padding:.55rem .85rem;font-size:.78rem;font-weight:700;
-    color:var(--red);display:flex;align-items:center;gap:.45rem">
-    <span>⏰</span><span id="hero-urgency-text"></span>
-  </div>
+      <div id="hero-urgency" class="hero-urgency-box" style="display:none">
+        <span>⏰</span><span id="hero-urgency-text"></span>
+      </div>
   <div class="hero-stats-row">
         <div class="hero-stat">
           <div class="hero-stat-val" id="hero-q-count">1,000+</div>
           <div class="hero-stat-lbl">Questions</div>
         </div>
         <div class="hero-stat">
-          <div class="hero-stat-val" style="color:var(--cyan)">457+</div>
+          <div class="hero-stat-val" style="color:var(--cyan)">700+</div>
           <div class="hero-stat-lbl">Students</div>
         </div>
         <div class="hero-stat">
@@ -973,6 +1376,13 @@ select.form-input option{background:var(--surface2)}
 <!-- EXAM OVERLAY -->
 <div class="screen overlay" id="screen-exam">
   <div class="ep-bar"><div class="ep-fill" id="ep-fill" style="width:0"></div></div>
+  <!-- NAV ABOVE QUESTION (prev/next/flag visible before scrolling) -->
+  <div class="q-nav q-nav-top">
+    <button class="btn btn-ghost btn-sm" onclick="prevQ()">← Prev</button>
+    <button class="btn btn-sm" id="flag-btn" onclick="toggleFlag()"
+      style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(210,153,34,.25)">🚩 Flag</button>
+    <button class="btn btn-primary btn-sm" onclick="nextQ()">Next →</button>
+  </div>
   <div class="q-area">
     <div class="q-counter-row">
       <span class="q-counter" id="q-counter">Q 1 OF 25</span>
@@ -988,19 +1398,6 @@ select.form-input option{background:var(--surface2)}
     </div>
   </div>
   <div class="q-dot-grid" id="q-dot-grid"></div>
-  <div class="q-nav">
-    <button class="btn btn-ghost btn-sm" onclick="prevQ()">← Prev</button>
-    <button class="btn btn-sm" id="flag-btn" onclick="toggleFlag()"
-      style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(210,153,34,.25)">🚩 Flag</button>
-    <button class="btn btn-primary btn-sm" onclick="nextQ()">Next →</button>
-  </div>
-  <!-- EXAM SUBMIT BOTTOM BAR (always visible during exam) -->
-  <div id="exam-bottom-bar" style="display:none;padding:.6rem 1rem;border-top:1px solid var(--border);
-    background:var(--bg);position:sticky;bottom:0">
-    <button class="btn btn-danger btn-full" onclick="confirmSubmit()" style="font-weight:700">
-      ✓ Submit Exam
-    </button>
-  </div>
 </div>
 
 <!-- RESULTS OVERLAY -->
@@ -1243,6 +1640,26 @@ select.form-input option{background:var(--surface2)}
   <div id="notif-list" style="padding-bottom:1.5rem"></div>
 </div>
 
+<!-- ══ SHARE SCORE POPUP (auto-shows after test) ══ -->
+<div id="share-score-popup" class="share-popup-overlay" onclick="if(event.target===this)closeSharePopup()">
+  <div class="share-popup-box">
+    <div style="font-size:1.5rem;margin-bottom:.3rem">🎯</div>
+    <div class="share-popup-score" id="spp-score">—%</div>
+    <div class="share-popup-label" id="spp-label">MTS 101 · FUTA Survival</div>
+    <div class="share-popup-msg" id="spp-msg">Great job!</div>
+    <div class="share-popup-sub">Challenge your classmates — share your score and see if they can beat it 🔥</div>
+    <div style="display:flex;flex-direction:column;gap:.5rem">
+      <button class="btn btn-cyan btn-full btn-lg" onclick="shareScoreCard();closeSharePopup()" style="font-weight:800;font-size:.95rem">
+        📸 Share My Score Card
+      </button>
+      <div style="display:flex;gap:.45rem">
+        <button class="btn btn-primary btn-full" onclick="closeSharePopup();showOverlay('review')">📋 Review Answers</button>
+        <button class="btn btn-ghost btn-full" onclick="closeSharePopup()" style="color:var(--muted2)">Maybe Later</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
@@ -1283,7 +1700,7 @@ const TIMETABLE = [
   {date:'2026-03-18',day:'Wed 18 Mar',course:'PHY 101',code:'PHY101',time:'8:30 – 11:30 AM'},
   {date:'2026-03-21',day:'Sat 21 Mar', course:'GNS 101',code:'GNS101',time:'8:30 – 11:30 AM'},
   {date:'2026-03-27',day:'Fri 27 Mar', course:'CSC 101',code:'CSC101',time:'8:30 – 11:30 AM'},
-  {date:'2026-03-28',day:'Sat 28 Mar', course:'CHE 101',code:'CHE101',time:'8:30 – 11:30 AM'},
+  {date:'2026-04-08',day:'Wed 8 Apr',  course:'CHE 101',code:'CHE101',time:'8:30 – 11:30 AM'},
   {date:'2026-03-30',day:'Mon 30 Mar', course:'BIO 101',code:'BIO101',time:'8:30 – 11:30 AM'},
   {date:'2026-04-07',day:'Tue 7 Apr',  course:'MTS 101',code:'MTS101',time:'8:30 – 11:30 AM'},
 ];
@@ -1316,34 +1733,85 @@ const FAQS = [
 // All courses load dynamically from the Gist JSON — no hardcoded coming soon list.
 // To add a new course: add it to futa_cbt_questions.json and update the Gist. It appears automatically.
 
-const ICON_MAP  = {PHY101:'⚡',PHY103:'🔬',MTS101:'📐',GNS103:'📚',CHE101:'🧪',GET101:'⚙️',GNS101:'📝',CSC101:'💻'};
+const ICON_MAP  = {PHY101:'⚡',PHY103:'🔬',MTS101:'📐',GNS103:'📚',CHE101:'🧪',GET101:'⚙️',GNS101:'📝',CSC101:'💻',BIO101:'🧬'};
 const COLOR_MAP = {
   PHY101:'rgba(47,129,247,.1)',  PHY103:'rgba(210,153,34,.1)',
   MTS101:'rgba(137,87,229,.1)',  GNS103:'rgba(35,134,54,.1)',
   CHE101:'rgba(218,54,51,.08)', GET101:'rgba(56,189,248,.1)',
   GNS101:'rgba(167,139,250,.1)', CSC101:'rgba(47,129,247,.08)',
+  BIO101:'rgba(35,134,54,.1)',
 };
 const GLOW_MAP = {
   PHY101:'glow-blue',  PHY103:'glow-amber',
   MTS101:'glow-purple',GNS103:'glow-green',
   CHE101:'glow-red',   GET101:'glow-cyan',
   GNS101:'glow-purple',CSC101:'glow-blue',
+  BIO101:'glow-green',
 };
 
 
 // ── NOTIFICATIONS ────────────────────────────────────────────
-// Add new notifications here. Push to GitHub — all users see it on next open.
-// Format: {id:'unique-id', icon:'emoji', text:'message', date:'display date'}
-const NOTIFICATIONS = [
-  {id:'n2', icon:'📅', text:'CHE 101 exam is Saturday 28 Mar — Sprint mode covers all the key topics in just 8 minutes', date:'Mar 2026'},
-  {id:'n3', icon:'🗂️', text:'NEW: Study Mode + Flashcards are live — go to Practice → Study Mode to try them now', date:'Mar 2026'},
-  {id:'n4', icon:'📸', text:'NEW: Share your score as an image after every test and challenge your classmates!', date:'Mar 2026'},
-  {id:'n5', icon:'🔥', text:'457+ FUTA students are already using FUTA NEXUS — share the link and grow our community!', date:'Mar 2026'},
+// Static app-wide announcements
+const STATIC_NOTIFICATIONS = [
+  {id:'n_bio',    icon:'🧬', text:'BIO 101 exam is Monday 30 Mar — Sprint through Cell Biology and Genetics now!', date:'Mar 2026'},
+  {id:'n_che',    icon:'🧪', text:'CHE 101 has been rescheduled to Wednesday 8 Apr — you have more time to prepare!', date:'Mar 2026'},
+  {id:'n_mts',    icon:'📐', text:'MTS 101 is Tuesday 7 Apr — Partial Fractions and Binomial Theorem are key topics. Start Study Mode now.', date:'Mar 2026'},
+  {id:'n3',       icon:'🗂️', text:'NEW: Study Mode + Flashcards are live — go to Practice → Study Mode to try them now', date:'Mar 2026'},
+  {id:'n4',       icon:'📸', text:'NEW: Share your score as an image after every test and challenge your classmates!', date:'Mar 2026'},
+  {id:'n5',       icon:'🔥', text:'700+ FUTA students are already using FUTA NEXUS — share the link and grow our community!', date:'Mar 2026'},
 ];
+
+function getDynamicNotifications(){
+  const notifs = [];
+  const now = new Date();
+  const hour = now.getHours();
+  const name = userProfile ? userProfile.name.split(' ')[0] : null;
+
+  // Time-of-day greeting
+  const greetId = 'greet_' + now.toISOString().split('T')[0];
+  const savedGreets = JSON.parse(localStorage.getItem('fnx_notif_read') || '[]');
+  if (!savedGreets.includes(greetId)) {
+    let greetIcon, greetText;
+    if (hour >= 5 && hour < 12) {
+      greetIcon = '🌅';
+      greetText = (name ? 'Good morning, ' + name + '! ' : 'Good morning! ') + 'Start your day right — take a quick Sprint test before lectures.';
+    } else if (hour >= 12 && hour < 17) {
+      greetIcon = '☀️';
+      greetText = (name ? 'Good afternoon, ' + name + '! ' : 'Good afternoon! ') + 'Your next exam is coming up. Open Practice and run a few questions now.';
+    } else if (hour >= 17 && hour < 21) {
+      greetIcon = '🌆';
+      greetText = (name ? 'Good evening, ' + name + '! ' : 'Good evening! ') + 'Evening revision is powerful — try Study Mode for a stress-free session.';
+    } else {
+      greetIcon = '🌙';
+      greetText = (name ? 'Still up, ' + name + '? ' : 'Still up? ') + 'Quick flashcard run before you sleep — it locks information into memory.';
+    }
+    notifs.push({id: greetId, icon: greetIcon, text: greetText, date: 'Today', dynamic: true});
+  }
+
+  // Exam-day or day-before reminders
+  const today = new Date(); today.setHours(0,0,0,0);
+  TIMETABLE.forEach(t => {
+    const examDate = new Date(t.date); examDate.setHours(0,0,0,0);
+    const diff = Math.round((examDate - today) / 86400000);
+    const remId = 'exam_rem_' + t.code;
+    if (!savedGreets.includes(remId)) {
+      if (diff === 0) {
+        notifs.push({id: remId, icon: '🚨', text: t.course + ' is TODAY at ' + t.time + '! Do a quick Sprint now to warm up your brain 🔥', date: 'Today', dynamic: true});
+      } else if (diff === 1) {
+        notifs.push({id: remId, icon: '⏰', text: t.course + ' is TOMORROW — are you prepared? Use Study Mode tonight for a full review.', date: 'Tomorrow', dynamic: true});
+      } else if (diff === 3) {
+        notifs.push({id: remId, icon: '📅', text: t.course + ' is in 3 days (' + t.day + '). Run at least one Mastery Mode test before then!', date: t.day, dynamic: true});
+      }
+    }
+  });
+
+  return notifs;
+}
 
 function initNotifications(){
   const readIds = JSON.parse(localStorage.getItem('fnx_notif_read')||'[]');
-  const unread = NOTIFICATIONS.filter(n=>!readIds.includes(n.id));
+  const allNotifs = [...getDynamicNotifications(), ...STATIC_NOTIFICATIONS];
+  const unread = allNotifs.filter(n=>!readIds.includes(n.id));
   const badge = document.getElementById('notif-badge');
   if(badge){
     if(unread.length>0){
@@ -1357,15 +1825,16 @@ function initNotifications(){
 
 function renderNotifList(){
   const readIds = JSON.parse(localStorage.getItem('fnx_notif_read')||'[]');
+  const allNotifs = [...getDynamicNotifications(), ...STATIC_NOTIFICATIONS];
   const list = document.getElementById('notif-list');
   if(!list) return;
-  if(!NOTIFICATIONS.length){
-    list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+  if(!allNotifs.length){
+    list.innerHTML = '<div class="notif-empty" style="padding:2rem;text-align:center;color:var(--muted2)">No notifications yet</div>';
     return;
   }
-  list.innerHTML = NOTIFICATIONS.map(n=>{
+  list.innerHTML = allNotifs.map(n=>{
     const isRead = readIds.includes(n.id);
-    return `<div class="notif-item${isRead?'':' unread'}">
+    return `<div class="notif-item${isRead?'':' unread'}" onclick="markNotifRead('${n.id}',this)">
       <div class="notif-unread-dot${isRead?' read':''}"></div>
       <div class="notif-content">
         <div class="notif-text">${n.icon} ${n.text}</div>
@@ -1375,11 +1844,23 @@ function renderNotifList(){
   }).join('');
 }
 
-// toggleNotifPanel replaced by showOverlay('notifications')
+function markNotifRead(id, el){
+  const readIds = JSON.parse(localStorage.getItem('fnx_notif_read')||'[]');
+  if(!readIds.includes(id)){
+    readIds.push(id);
+    localStorage.setItem('fnx_notif_read', JSON.stringify(readIds));
+    el.classList.remove('unread');
+    el.querySelector('.notif-unread-dot')?.classList.add('read');
+    initNotifications();
+  }
+}
 
 function markAllNotifRead(){
-  const allIds = NOTIFICATIONS.map(n=>n.id);
-  localStorage.setItem('fnx_notif_read', JSON.stringify(allIds));
+  const allNotifs = [...getDynamicNotifications(), ...STATIC_NOTIFICATIONS];
+  const allIds = allNotifs.map(n=>n.id);
+  const existing = JSON.parse(localStorage.getItem('fnx_notif_read')||'[]');
+  const merged = [...new Set([...existing, ...allIds])];
+  localStorage.setItem('fnx_notif_read', JSON.stringify(merged));
   initNotifications();
   renderNotifList();
   toast('All notifications marked as read','s');
@@ -1396,8 +1877,11 @@ function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 async function init(){
   if(localStorage.getItem('fnx_theme')==='light')document.body.classList.add('light');
 
-  // Show app shell IMMEDIATELY — do not wait for fetch
-  finishInit();
+  // ── CRITICAL: Always hide splash after 1.4s regardless of anything else ──
+  setTimeout(hideSplash, 1400);
+
+  // Show app shell — wrap in try/catch so a render bug never traps user on splash
+  try{ finishInit(); } catch(err){ console.error('finishInit error:',err); }
 
   // Detect local file
   const isLocal = location.protocol === 'file:';
@@ -1433,6 +1917,17 @@ async function init(){
   }
 }
 
+// ── SPLASH ────────────────────────────────────────────────────
+function hideSplash(){
+  const splash = document.getElementById('splash');
+  if(!splash) return;
+  splash.style.opacity = '0';
+  splash.style.pointerEvents = 'none';
+  setTimeout(()=>{
+    splash.style.display = 'none';
+  }, 580);
+}
+
 function buildCourses(coursesData){
   COURSES={};
   Object.entries(coursesData).forEach(([code,cdata])=>{
@@ -1453,6 +1948,8 @@ function buildCourses(coursesData){
 }
 
 function finishInit(){
+  // Desktop sidebar state (collapsed/expanded)
+  initSidebarState();
   // Init notification badge
   initNotifications();
 
@@ -1532,8 +2029,14 @@ function gotoTab(tab){
   document.querySelectorAll('.tab-btn,.tab-practice').forEach(b=>b.classList.remove('active'));
   const target=document.getElementById('tab-'+tab);
   if(target)target.classList.add('active');
+  // Sync bottom nav
   const btn=document.getElementById('tab-btn-'+tab);
   if(btn)btn.classList.add('active');
+  // Sync desktop sidebar
+  document.querySelectorAll('.ds-item[id^="ds-btn-"]').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.ds-practice-btn').forEach(b=>b.classList.remove('active'));
+  const dsBtn=document.getElementById('ds-btn-'+tab);
+  if(dsBtn) dsBtn.classList.add('active');
   currentTab=tab;
   overlayStack=[];
   document.querySelectorAll('.screen.overlay').forEach(s=>s.classList.remove('active'));
@@ -1633,8 +2136,33 @@ window.addEventListener('popstate',e=>{
 });
 history.pushState(null,'',location.href);
 
+// ── DESKTOP SIDEBAR TOGGLE ───────────────────────────────────
+function toggleSidebar(){
+  const sidebar = document.getElementById('desktop-sidebar');
+  if(!sidebar) return;
+  const isOpen = sidebar.classList.toggle('expanded');
+  document.body.classList.toggle('sidebar-open', isOpen);
+  // Persist preference
+  try{ localStorage.setItem('fnx_sidebar', isOpen ? '1' : '0'); }catch(e){}
+}
+
+function initSidebarState(){
+  // Only applies on desktop
+  if(window.innerWidth < 768) return;
+  // Default: collapsed (don't auto-open)
+  // Respect saved preference
+  try{
+    const saved = localStorage.getItem('fnx_sidebar');
+    if(saved === '1'){
+      document.getElementById('desktop-sidebar')?.classList.add('expanded');
+      document.body.classList.add('sidebar-open');
+    }
+  }catch(e){}
+}
+
 // ── DRAWER ────────────────────────────────────────────────────
-document.getElementById('menu-btn').addEventListener('click',()=>{
+const menuBtn = document.getElementById('menu-btn');
+if(menuBtn) menuBtn.addEventListener('click',()=>{
   vib(15);
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawer-overlay').classList.add('open');
@@ -2136,6 +2664,11 @@ function submitExam(){
   showOverlay('results');
   document.getElementById('exam-timer').classList.add('hidden');
   document.getElementById('submit-btn').classList.add('hidden');
+
+  // Auto-show share popup after a short delay (not in study mode)
+  if(currentMode!==4){
+    setTimeout(()=>openSharePopup(record),1600);
+  }
 }
 
 function renderResultsScreen(r,bC,bT,elapsed){
@@ -2243,6 +2776,32 @@ function renderReview(filter){
       (q.expl?'<div class="rev-expl"><strong>📖 Explanation:</strong> '+q.expl+'</div>':'')+
       '</div>';
   }).join('');
+}
+
+// ── SHARE SCORE POPUP ────────────────────────────────────────
+function openSharePopup(r){
+  const popup = document.getElementById('share-score-popup');
+  const scoreEl = document.getElementById('spp-score');
+  const labelEl = document.getElementById('spp-label');
+  const msgEl   = document.getElementById('spp-msg');
+  if(!popup) return;
+  const pct = r.pct;
+  const courseName = (COURSES[r.course]?COURSES[r.course].name:r.course)||r.course;
+  if(scoreEl){
+    scoreEl.textContent = pct+'%';
+    scoreEl.style.color = pct>=70?'var(--green)':pct>=50?'var(--accent)':'var(--red)';
+  }
+  if(labelEl) labelEl.textContent = courseName + ' · ' + r.mode;
+  if(msgEl){
+    msgEl.textContent = pct>=70 ? 'Excellent work! 🎉' : pct>=50 ? 'Good effort, keep pushing! 💪' : 'Keep practising — you\'ll nail it! 📚';
+  }
+  popup.classList.add('open');
+  vib([20,15,40]);
+}
+
+function closeSharePopup(){
+  const popup = document.getElementById('share-score-popup');
+  if(popup) popup.classList.remove('open');
 }
 
 // ── SHARE SCORE CARD (IMAGE) ──────────────────────────────────
@@ -2747,18 +3306,10 @@ document.addEventListener('keydown',e=>{
   if(['1','2','3','4','5'].includes(e.key))chooseOpt(parseInt(e.key)-1);
 });
 
-// ── STARTUP ───────────────────────────────────────────────────────
-// Apply theme immediately before anything renders
 // ── STARTUP ──────────────────────────────────────────────────
 if(localStorage.getItem('fnx_theme')==='light') document.body.classList.add('light');
 
-window.addEventListener('DOMContentLoaded',()=>{
-  setTimeout(()=>{
-    const s=document.getElementById('splash');
-    if(s){s.style.animation='splashFadeOut .4s ease forwards';setTimeout(()=>s.style.display='none',400);}
-  },2500);
-  init();
-});
+window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
